@@ -8,7 +8,7 @@
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,600;1,400;1,600&family=Archivo+Black&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,600;1,400;1,600&amp;family=Archivo+Black&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
   <style>
     :root {
       color-scheme: light;
@@ -18,6 +18,8 @@
       --rule: #1f1f1f;
       --accent: #0000ff;
       --line-soft: rgba(15,15,15,0.18);
+      --surface: rgba(242,242,238,0.82);
+      --focus-ring: 2px solid rgba(0,0,255,0.76);
       --ease-out: cubic-bezier(0.22,1,0.36,1);
       --edge: clamp(12px,2vw,30px);
       --safe-top: env(safe-area-inset-top);
@@ -37,6 +39,10 @@
       overflow: hidden;
     }
 
+    html {
+      overflow-x: hidden;
+    }
+
     body {
       font: 400 14px/1.35 "Archivo","Avenir Next","Trebuchet MS",sans-serif;
       letter-spacing: 0.008em;
@@ -46,6 +52,35 @@
     }
 
     a, button { touch-action: manipulation; }
+
+    a:focus-visible,
+    button:focus-visible,
+    canvas:focus-visible,
+    main:focus-visible {
+      outline: var(--focus-ring);
+      outline-offset: 3px;
+    }
+
+    .skip-link {
+      position: absolute;
+      top: calc(0.5rem + var(--safe-top));
+      left: calc(0.5rem + var(--safe-left));
+      z-index: 40;
+      padding: 0.65rem 0.8rem;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      font: 500 0.66rem/1 "IBM Plex Mono",monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      transform: translateY(-140%);
+      transition: transform 180ms var(--ease-out);
+    }
+
+    .skip-link:focus-visible {
+      transform: translateY(0);
+      outline-color: #fff;
+    }
 
     .site {
       width: 100%;
@@ -112,13 +147,13 @@
     /* ── Layout ── */
     .layout {
       padding:
-        0.6rem
-        calc(var(--edge) + var(--safe-right))
         0.5rem
+        calc(var(--edge) + var(--safe-right))
+        0.45rem
         calc(var(--edge) + var(--safe-left));
       display: grid;
-      grid-template-columns: clamp(200px,20vw,280px) minmax(0,1fr);
-      gap: clamp(12px,1.4vw,20px);
+      grid-template-columns: clamp(220px,22vw,300px) minmax(0,1fr);
+      gap: clamp(12px,1.6vw,22px);
       min-height: 0;
       height: 100%;
       overflow: hidden;
@@ -127,14 +162,16 @@
     /* ── Left Rail ── */
     .left-rail {
       border-right: 1px solid var(--rule);
-      padding-right: 1.2rem;
+      padding-right: clamp(0.95rem,1.7vw,1.35rem);
       display: flex;
       flex-direction: column;
-      gap: 0.7rem;
+      justify-content: space-between;
+      gap: 1rem;
       min-height: 0;
       overflow: auto;
       overscroll-behavior: contain;
       contain: layout style;
+      min-width: 0;
     }
 
     .rail-kicker {
@@ -146,46 +183,38 @@
     }
 
     .release-title {
-      font: italic 600 clamp(1.2rem,1.9vw,1.62rem)/1.08 "Archivo",sans-serif;
+      font: italic 600 clamp(1.28rem,2vw,1.8rem)/1.04 "Archivo",sans-serif;
       text-wrap: balance;
       max-inline-size: 11ch;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.02em;
     }
 
     .rail-list {
       list-style: none;
       padding: 0;
       display: grid;
-      gap: 0.18rem;
+      gap: 0.28rem;
+      font-size: 0.92rem;
     }
 
-    .rail-list a, .feature-link, .email-link {
+    .rail-list a {
       color: var(--ink);
       text-decoration: none;
       width: fit-content;
       border-bottom: 1px solid var(--ink);
-      transition: opacity 160ms ease;
+      transition: opacity 160ms var(--ease-out), transform 180ms var(--ease-out);
     }
-    .rail-list a:hover, .feature-link:hover, .email-link:hover { opacity: 0.6; }
+
+    .rail-list a:hover,
+    .rail-list a:focus-visible {
+      opacity: 0.65;
+      transform: translateX(1px);
+    }
 
     .rail-group {
       display: grid;
-      gap: 0.35rem;
-    }
-
-    .feature-link {
-      text-transform: lowercase;
-      letter-spacing: 0.018em;
-      font: 600 0.88rem/1.18 "Archivo",sans-serif;
-      text-wrap: balance;
-      max-inline-size: 18ch;
-    }
-
-    .ideas-tag {
-      color: var(--muted);
-      font-size: 0.78rem;
-      letter-spacing: 0.08em;
-      text-transform: lowercase;
+      gap: 0.42rem;
+      min-width: 0;
     }
 
     /* ── Hero Stage ── */
@@ -196,7 +225,7 @@
       min-height: 0;
       overflow: hidden;
       cursor: default;
-      background: var(--paper);
+      background: linear-gradient(180deg, #f5f5f1 0%, #ecece7 100%);
       contain: strict;
     }
 
@@ -206,6 +235,7 @@
       width: 100%;
       height: 100%;
       display: block;
+      filter: contrast(1.02);
     }
 
     .hero-hint {
@@ -215,7 +245,7 @@
       z-index: 5;
       padding: 0.38rem 0.52rem;
       border: 1px solid var(--line-soft);
-      background: rgba(242,242,238,0.82);
+      background: var(--surface);
       backdrop-filter: blur(8px);
       font: 500 0.5rem/1 "IBM Plex Mono",monospace;
       letter-spacing: 0.12em;
@@ -234,17 +264,20 @@
       z-index: 5;
       padding: 0.34rem 0.48rem;
       border: 1px solid var(--line-soft);
-      background: rgba(242,242,238,0.82);
+      background: var(--surface);
       backdrop-filter: blur(8px);
       font: 500 0.5rem/1 "IBM Plex Mono",monospace;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--muted);
       cursor: pointer;
-      transition: opacity 200ms ease, color 200ms ease;
+      transition: opacity 200ms ease, color 200ms ease, border-color 180ms var(--ease-out);
       user-select: none;
     }
-    .fx-toggle:hover { color: var(--ink); }
+    .fx-toggle:hover {
+      color: var(--ink);
+      border-color: rgba(15,15,15,0.35);
+    }
 
     /* ── Footer ── */
     .footer {
@@ -283,7 +316,12 @@
 
     /* ── Mobile ── */
     @media (max-width: 920px) {
-      html, body { min-height: 100%; height: auto; overflow-y: auto; }
+      html, body {
+        min-height: 100%;
+        height: auto;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
       .site {
         min-height: 100svh;
         height: auto;
@@ -337,16 +375,15 @@
       }
       .left-rail {
         border-right: 0;
-        border-bottom: 0;
         justify-content: flex-start;
-        padding-top: 0.62rem;
+        padding-top: 0.7rem;
         padding-right: calc(var(--edge) + var(--safe-right));
         padding-left: calc(var(--edge) + var(--safe-left));
         padding-bottom: 0;
-        gap: 0.72rem;
+        gap: 0.8rem;
         overflow: visible;
       }
-      .rail-group { gap: 0.16rem; }
+      .rail-group { gap: 0.18rem; }
       .release-title {
         max-inline-size: 12ch;
         font-size: clamp(1.45rem, 8vw, 2.2rem);
@@ -369,11 +406,8 @@
         padding: 0.18rem 0 0.12rem;
         line-height: 1.12;
       }
-      .rail-list {
-        font-size: 0.98rem;
-      }
       .hero-stage {
-        min-height: clamp(250px,66vw,420px);
+        min-height: clamp(300px,72vw,460px);
         height: auto;
         aspect-ratio: 1545 / 1024;
         order: -1;
@@ -452,6 +486,7 @@
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#mainContent">Skip to Main Content</a>
   <div class="site">
     <header class="masthead">
       <a class="box-logo" href="/">AMEN</a>
@@ -460,7 +495,7 @@
       </nav>
     </header>
 
-    <main class="layout">
+    <main class="layout" id="mainContent" tabindex="-1">
       <aside class="left-rail">
         <div class="rail-group">
           <p class="rail-kicker">current release</p>
