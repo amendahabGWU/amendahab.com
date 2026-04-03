@@ -272,8 +272,12 @@
 
     /* ── Mobile ── */
     @media (max-width: 920px) {
-      html, body { height: auto; overflow-y: auto; }
-      .site { height: auto; overflow: visible; }
+      html, body { min-height: 100%; height: auto; overflow-y: auto; }
+      .site {
+        min-height: 100dvh;
+        height: auto;
+        overflow: visible;
+      }
       body { font-size: 15px; }
       .masthead {
         flex-direction: column;
@@ -299,6 +303,7 @@
         height: auto;
         overflow: visible;
         gap: 0;
+        align-content: start;
         padding-top: 0;
         padding-bottom: 0;
         padding-right: 0;
