@@ -1,0 +1,805 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AMEN — Without Fear of Wind. Demos, live performances, and ideas.">
+  <title>AMEN | Without Fear of Wind</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,600;1,400;1,600&family=Archivo+Black&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f2f2ee;
+      --ink: #0f0f0f;
+      --muted: #5f5f5f;
+      --rule: #1f1f1f;
+      --accent: #0000ff;
+      --line-soft: rgba(15,15,15,0.18);
+      --ease-out: cubic-bezier(0.22,1,0.36,1);
+      --edge: clamp(12px,2vw,30px);
+    }
+
+    * { box-sizing: border-box; margin: 0; }
+
+    html, body {
+      height: 100%;
+      background: var(--paper);
+      color: var(--ink);
+      overflow: hidden;
+    }
+
+    body {
+      font: 400 14px/1.35 "Archivo","Avenir Next","Trebuchet MS",sans-serif;
+      letter-spacing: 0.008em;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+    }
+
+    .site {
+      width: 100%;
+      height: 100dvh;
+      display: grid;
+      grid-template-rows: auto minmax(0,1fr) auto;
+      overflow: hidden;
+    }
+
+    /* ── Masthead ── */
+    .masthead {
+      padding: 0.62rem var(--edge) 0.58rem;
+      border-bottom: 1px solid var(--rule);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1.2rem;
+      contain: layout style;
+    }
+
+    .box-logo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 6.4rem;
+      height: 1.9rem;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      font: 400 1.02rem/1 "Archivo Black","Arial Black",sans-serif;
+      letter-spacing: 0.018em;
+      transition: filter 180ms var(--ease-out), transform 180ms var(--ease-out);
+    }
+
+    .box-logo:hover { filter: brightness(0.88); transform: translateY(-1px); }
+
+    .main-nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 0.9rem 1.4rem;
+      font-size: 0.72rem;
+      text-transform: lowercase;
+      letter-spacing: 0.1em;
+      align-items: baseline;
+    }
+
+    .main-nav a {
+      color: var(--ink);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 160ms var(--ease-out), opacity 160ms var(--ease-out);
+    }
+    .main-nav a:hover { border-color: var(--ink); opacity: 0.72; }
+
+    /* ── Layout ── */
+    .layout {
+      padding: 0.6rem var(--edge) 0.5rem;
+      display: grid;
+      grid-template-columns: clamp(200px,20vw,280px) minmax(0,1fr);
+      gap: clamp(12px,1.4vw,20px);
+      min-height: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /* ── Left Rail ── */
+    .left-rail {
+      border-right: 1px solid var(--rule);
+      padding-right: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      min-height: 0;
+      overflow: auto;
+      overscroll-behavior: contain;
+      contain: layout style;
+    }
+
+    .rail-kicker {
+      font: 500 0.56rem/1 "IBM Plex Mono",monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      margin-top: 0.15rem;
+    }
+
+    .release-title {
+      font: italic 600 clamp(1.2rem,1.9vw,1.62rem)/1.08 "Archivo",sans-serif;
+      text-wrap: balance;
+      max-inline-size: 11ch;
+      letter-spacing: -0.01em;
+    }
+
+    .rail-list {
+      list-style: none;
+      padding: 0;
+      display: grid;
+      gap: 0.18rem;
+    }
+
+    .rail-list a, .feature-link, .email-link {
+      color: var(--ink);
+      text-decoration: none;
+      width: fit-content;
+      border-bottom: 1px solid var(--ink);
+      transition: opacity 160ms ease;
+    }
+    .rail-list a:hover, .feature-link:hover, .email-link:hover { opacity: 0.6; }
+
+    .feature-link {
+      text-transform: lowercase;
+      letter-spacing: 0.018em;
+      font: 600 0.88rem/1.18 "Archivo",sans-serif;
+      text-wrap: balance;
+      max-inline-size: 18ch;
+    }
+
+    .ideas-tag {
+      color: var(--muted);
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: lowercase;
+    }
+
+    /* ── Hero Stage ── */
+    .hero-stage {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+      cursor: default;
+      background: var(--paper);
+      contain: strict;
+    }
+
+    .hero-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .hero-hint {
+      position: absolute;
+      bottom: clamp(8px,1vw,14px);
+      right: clamp(8px,1vw,14px);
+      z-index: 5;
+      padding: 0.38rem 0.52rem;
+      border: 1px solid var(--line-soft);
+      background: rgba(242,242,238,0.82);
+      backdrop-filter: blur(8px);
+      font: 500 0.5rem/1 "IBM Plex Mono",monospace;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 1200ms ease;
+    }
+    .hero-hint.faded { opacity: 0; }
+
+    .fx-toggle {
+      position: absolute;
+      bottom: clamp(8px,1vw,14px);
+      left: clamp(8px,1vw,14px);
+      z-index: 5;
+      padding: 0.34rem 0.48rem;
+      border: 1px solid var(--line-soft);
+      background: rgba(242,242,238,0.82);
+      backdrop-filter: blur(8px);
+      font: 500 0.5rem/1 "IBM Plex Mono",monospace;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      cursor: pointer;
+      transition: opacity 200ms ease, color 200ms ease;
+      user-select: none;
+    }
+    .fx-toggle:hover { color: var(--ink); }
+
+    /* ── Footer ── */
+    .footer {
+      border-top: 1px solid var(--rule);
+      padding: 0.5rem var(--edge) 0.52rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 0.9rem;
+      align-items: baseline;
+      flex-wrap: wrap;
+      font-size: 0.64rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      contain: layout style;
+    }
+
+    .footer-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem 1rem;
+      align-items: center;
+    }
+
+    .footer a {
+      color: var(--ink);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 160ms var(--ease-out), opacity 160ms var(--ease-out);
+    }
+    .footer a:hover { border-color: var(--ink); opacity: 0.72; }
+
+    /* ── Mobile ── */
+    @media (max-width: 920px) {
+      html, body { height: auto; overflow-y: auto; }
+      .site { height: auto; overflow: visible; }
+      .masthead { flex-direction: column; align-items: flex-start; }
+      .main-nav { width: 100%; justify-content: space-between; gap: 0.5rem 0.8rem; }
+      .layout { grid-template-columns: 1fr; height: auto; overflow: visible; }
+      .left-rail { border-right: 0; border-bottom: 1px solid var(--rule); padding-right: 0; padding-bottom: 0.85rem; overflow: visible; }
+      .hero-stage { min-height: clamp(320px,56svh,560px); height: auto; order: -1; }
+      .footer { flex-direction: column; align-items: flex-start; }
+    }
+
+    /* ── SR ── */
+    .sr-only {
+      position: absolute; width: 1px; height: 1px;
+      padding: 0; margin: -1px; overflow: hidden;
+      clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="site">
+    <header class="masthead">
+      <a class="box-logo" href="/">AMEN</a>
+      <nav class="main-nav" aria-label="Primary">
+        <a href="/demos">demos</a>
+        <a href="https://www.ninaprotocol.com/profiles/amendahab?ref=CJCM76SkGbNEwDUTgqNixQG26Y6YsQUcDchvTsgGGf5F" target="_blank" rel="noopener noreferrer">nina</a>
+        <a href="mailto:amen@amendahab.com">contact</a>
+        <a href="https://instagram.com/amendahab" target="_blank" rel="noopener noreferrer">instagram</a>
+      </nav>
+    </header>
+
+    <main class="layout">
+      <aside class="left-rail">
+        <p class="rail-kicker">current release</p>
+        <h1 class="release-title">Without Fear of Wind</h1>
+
+        <ul class="rail-list" aria-label="Listen">
+          <li><a href="https://open.spotify.com/track/26YH77kEs232A02Q166fDb?si=49413e3090a44df1" target="_blank" rel="noopener noreferrer">spotify</a></li>
+          <li><a href="https://music.apple.com/us/album/without-fear-of-wind-single/1772431087?uo=4" target="_blank" rel="noopener noreferrer">apple music</a></li>
+          <li><a href="https://amendahab.bandcamp.com/track/without-fear-of-wind" target="_blank" rel="noopener noreferrer">bandcamp</a></li>
+        </ul>
+
+        <p class="rail-kicker">explore</p>
+        <a class="feature-link" href="/demos">demos &amp; live performances</a>
+        <p class="ideas-tag">ideas and such</p>
+        <a class="feature-link" href="https://www.ninaprotocol.com/profiles/amendahab?ref=CJCM76SkGbNEwDUTgqNixQG26Y6YsQUcDchvTsgGGf5F" target="_blank" rel="noopener noreferrer">nina</a>
+
+        <p class="rail-kicker">contact</p>
+        <a class="email-link" href="mailto:amen@amendahab.com">amen@amendahab.com</a>
+      </aside>
+
+      <section class="hero-stage" aria-label="Interactive ASCII portrait" id="heroStage">
+        <span class="sr-only" aria-live="polite">ASCII portrait of the artist. Hover to interfere with the signal. Click to send a corrupt pulse. Press R to reset. Animations are paused when reduced motion is enabled.</span>
+        <canvas class="hero-canvas" id="heroCanvas"></canvas>
+        <div class="hero-hint" id="heroHint">hover to interfere · click to corrupt · R to reset</div>
+        <button class="fx-toggle" id="fxToggle" aria-label="Toggle ASCII effects">fx: on</button>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>ideas and such</span>
+      <nav class="footer-nav" aria-label="Social">
+        <a href="https://instagram.com/amendahab" target="_blank" rel="noopener noreferrer">instagram</a>
+        <a href="https://open.spotify.com/artist/2WB58OxKhr8iAK030gw3cB?si=UnBD0_N4TYylXUge_d0DgQ" target="_blank" rel="noopener noreferrer">spotify</a>
+        <a href="https://www.youtube.com/@amen_dahab" target="_blank" rel="noopener noreferrer">youtube</a>
+        <a href="/demos">demos</a>
+      </nav>
+    </footer>
+  </div>
+
+<script>
+(() => {
+  'use strict';
+
+  // ── Environment Detection ──
+  // Accessibility: respect OS/browser reduced-motion and prefers-contrast
+  const mqReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let reducedMotion = mqReducedMotion.matches;
+
+  // Listen for live changes (user toggles setting while page is open)
+  mqReducedMotion.addEventListener('change', (e) => {
+    reducedMotion = e.matches;
+    if (reducedMotion && photoData) {
+      buildGrid(); buildScanlines(); renderStatic();
+    }
+  });
+
+  // Low-power heuristics: threads, Save-Data header, touch-only (likely mobile),
+  // and small screens (likely constrained devices)
+  const hwThreads = navigator.hardwareConcurrency || 4;
+  const saveData = !!(navigator.connection && navigator.connection.saveData);
+  const isSmallScreen = window.screen && (screen.width < 768 || screen.height < 768);
+  const isTouchOnly = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+  let lowPower = reducedMotion || hwThreads <= 4 || saveData || (isTouchOnly && isSmallScreen);
+
+  // Battery API removed — deprecated in most modern browsers
+
+  // ── Config ──
+  const RAMP = ' .\u00b7:;+=*oO0#%&WMN@\u2593\u2588';
+  const FONT_SIZE = 7;
+  const LINE_HEIGHT = 8;
+  const FONT = `${FONT_SIZE}px "IBM Plex Mono", "Courier New", monospace`;
+  const BASE_CHAR_W = FONT_SIZE * 0.6;
+  const PHOTO_SRC = 'portrait.jpg';
+
+  // Effect intensities (zeroed in static/low-power modes)
+  const GLITCH_CHANCE    = lowPower ? 0 : 0.0125;
+  const GLITCH_DURATION  = 14;
+  const ROW_GLITCH_CHANCE = lowPower ? 0 : 0.03;
+  const ROW_GLITCH_MAX_SHIFT = 40;
+  const SCANLINE_ALPHA   = lowPower ? 0.04 : 0.09;
+  const SCANLINE_SPACING = lowPower ? 6 : 4;
+  const FLICKER_CHANCE   = lowPower ? 0 : 0.02;
+  const TEAR_CHANCE      = lowPower ? 0 : 0.075;
+  const SCRAMBLE_POOL    = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789{}[]<>?/|\\!@#$%^&*';
+  const SCANLINE_STYLE   = `rgba(0,0,0,${SCANLINE_ALPHA})`;
+
+  // Signal interference config
+  const INTERFERENCE_ROWS = 8;
+  const INTERFERENCE_GLITCH_MULT = 6;
+  const INTERFERENCE_SHIFT_MULT = 2.5;
+
+  // Corrupt pulse config
+  const PULSE_SPEED = 3;
+  const PULSE_GLITCH_FILL = 0.7;
+  const PULSE_WIDTH = 6;
+
+  // Threshold modulation
+  const THRESH_PUSH    = 7;
+  const THRESH_SPEED   = 0.00032;
+  const BASE_RANGE     = RAMP.length - 1 - THRESH_PUSH;
+
+  // Adaptive density
+  const MAX_CELLS = 22000;
+
+  // ── State ──
+  const canvas = document.getElementById('heroCanvas');
+  const ctx = canvas.getContext('2d', { alpha: false });
+  const hint = document.getElementById('heroHint');
+  const stage = document.getElementById('heroStage');
+
+  let W = 0, H = 0, dpr = 1;
+  let cols = 0, rows = 0, charW = BASE_CHAR_W, lineH = LINE_HEIGHT, fontSize = FONT_SIZE;
+  let activeFont = FONT;
+  let cellCount = 0;
+  let cellX, cellY, cellRow, cellBaseChar, cellMono, cellGlitchT, cellFlickerT, cellDither;
+  let photoData = null, photoW = 0, photoH = 0;
+  let rowGlitchOffsets, rowGlitchTargets;
+  let mouseX = -9999, mouseY = -9999, mouseRow = -1;
+  let mouseInStage = false;
+
+  let effectsOn = true;
+
+  // Corrupt pulse state
+  let pulseActive = false;
+  let pulseOriginRow = 0;
+  let pulseRadius = 0;
+
+  // ── Pre-computed color LUT ──
+  const GREY_LUT = new Array(256);
+  for (let i = 0; i < 256; i++) GREY_LUT[i] = `rgb(${i},${i},${i})`;
+
+  const RAMP_LEN = RAMP.length;
+  const SCRAMBLE_LEN = SCRAMBLE_POOL.length;
+
+  // ── Photo Loading ──
+  function loadPhoto() {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const c = document.createElement('canvas');
+        const scale = Math.min(800 / img.width, 600 / img.height, 1);
+        c.width = photoW = Math.round(img.width * scale);
+        c.height = photoH = Math.round(img.height * scale);
+        const cx = c.getContext('2d');
+        cx.drawImage(img, 0, 0, c.width, c.height);
+        photoData = cx.getImageData(0, 0, c.width, c.height).data;
+        resolve();
+      };
+      img.onerror = reject;
+      img.src = PHOTO_SRC;
+    });
+  }
+
+  function samplePhoto(u, v) {
+    const px = Math.min(Math.max(Math.round(u * (photoW - 1)), 0), photoW - 1);
+    const py = Math.min(Math.max(Math.round(v * (photoH - 1)), 0), photoH - 1);
+    const i = (py * photoW + px) * 4;
+    const r = photoData[i], g = photoData[i+1], b = photoData[i+2];
+    return 0.299 * r + 0.587 * g + 0.114 * b;
+  }
+
+  // ── Build Grid (with adaptive density) ──
+  function buildGrid() {
+    const rect = stage.getBoundingClientRect();
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    dpr = Math.min(window.devicePixelRatio || 1, isSafari ? 1.5 : 2);
+    if (lowPower) dpr = Math.min(dpr, 1);
+    W = rect.width;
+    H = rect.height;
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    fontSize = FONT_SIZE;
+    charW = BASE_CHAR_W;
+    lineH = LINE_HEIGHT;
+
+    const photoAspect = photoW / photoH;
+    const charAspect = charW / lineH;
+
+    let testCols, testRows;
+    function fitGrid() {
+      const maxCols = Math.floor(W / charW);
+      const maxRows = Math.floor(H / lineH);
+      const colsFromH = Math.floor(maxRows * photoAspect * (lineH / charW));
+      if (colsFromH <= maxCols) {
+        testRows = maxRows;
+        testCols = colsFromH;
+      } else {
+        testCols = maxCols;
+        testRows = Math.floor(maxCols * charW / (photoAspect * lineH));
+      }
+      if (testCols < 1) testCols = 1;
+      if (testRows < 1) testRows = 1;
+    }
+
+    fitGrid();
+
+    while (testCols * testRows > MAX_CELLS && fontSize < 14) {
+      fontSize += 0.5;
+      charW = fontSize * 0.6;
+      lineH = fontSize + 1;
+      fitGrid();
+    }
+
+    activeFont = `${fontSize}px "IBM Plex Mono", "Courier New", monospace`;
+    cols = testCols;
+    rows = testRows;
+
+    rowGlitchOffsets = new Float32Array(rows);
+    rowGlitchTargets = new Float32Array(rows);
+
+    const count = cols * rows;
+    cellX = new Float32Array(count);
+    cellY = new Float32Array(count);
+    cellRow = new Uint16Array(count);
+    cellBaseChar = new Uint8Array(count);
+    cellMono = new Uint8Array(count);
+    cellGlitchT = new Uint8Array(count);
+    cellFlickerT = new Uint8Array(count);
+    cellDither = new Float32Array(count);
+    cellCount = count;
+
+    const offsetX = (W - cols * charW) / 2;
+    const offsetY = (H - rows * lineH) / 2;
+    let idx = 0;
+
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        const x = offsetX + col * charW;
+        const y = offsetY + row * lineH;
+        const u = col / (cols - 1 || 1);
+        const v = row / (rows - 1 || 1);
+        const lum = samplePhoto(u, v);
+        const normL = lum / 255;
+        const g = Math.pow(normL, 2.0);
+        const curvedL = g < 0.5 ? 2 * g * g : 1 - 2 * (1 - g) * (1 - g);
+        const charIdx = Math.round((1 - curvedL) * BASE_RANGE);
+        const mono = Math.min(Math.round(curvedL * 100 + 15), 160);
+
+        cellX[idx] = x;
+        cellY[idx] = y;
+        cellRow[idx] = row;
+        cellBaseChar[idx] = charIdx;
+        cellMono[idx] = mono;
+        cellGlitchT[idx] = 0;
+        cellFlickerT[idx] = 0;
+        cellDither[idx] = Math.random();
+        idx++;
+      }
+    }
+  }
+
+  // ── Scanline path ──
+  let scanlinePath = null;
+  function buildScanlines() {
+    scanlinePath = new Path2D();
+    for (let y = 0; y < H; y += SCANLINE_SPACING) {
+      scanlinePath.rect(0, y, W, 1);
+    }
+  }
+
+  // ── Pointer: signal interference ──
+  function onPointerMove(e) {
+    if (reducedMotion || !effectsOn) return;
+    mouseX = e.clientX - cachedRect.left;
+    mouseY = e.clientY - cachedRect.top;
+    mouseInStage = true;
+    const offsetY = (H - rows * lineH) / 2;
+    mouseRow = Math.floor((mouseY - offsetY) / lineH);
+  }
+
+  function onPointerLeave() {
+    mouseInStage = false;
+    mouseRow = -1;
+  }
+
+  // ── Click/tap: corrupt pulse ──
+  function onClickPulse(e) {
+    if (reducedMotion || lowPower || !effectsOn) return;
+    const cy = e.clientY - cachedRect.top;
+    const offsetY = (H - rows * lineH) / 2;
+    pulseOriginRow = Math.floor((cy - offsetY) / lineH);
+    pulseRadius = 0;
+    pulseActive = true;
+  }
+
+  // ── Key handler ──
+  function onKeyDown(e) {
+    if (e.key === 'r' || e.key === 'R') {
+      cellGlitchT.fill(0);
+      cellFlickerT.fill(0);
+      rowGlitchTargets.fill(0);
+      pulseActive = false;
+    }
+  }
+
+  stage.addEventListener('pointermove', onPointerMove);
+  stage.addEventListener('pointerleave', onPointerLeave);
+  stage.addEventListener('click', onClickPulse);
+  document.addEventListener('keydown', onKeyDown);
+
+  // ── Effects toggle ──
+  const fxToggle = document.getElementById('fxToggle');
+  let animId = null;
+
+  fxToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    effectsOn = !effectsOn;
+    fxToggle.textContent = effectsOn ? 'fx: on' : 'fx: off';
+    if (!effectsOn) {
+      if (animId) { cancelAnimationFrame(animId); animId = null; }
+      renderStatic();
+    } else if (!reducedMotion && !lowPower) {
+      animId = requestAnimationFrame(render);
+    }
+  });
+
+  // ── Static render (accessibility / reduced-motion) ──
+  function renderStatic() {
+    setupFrame();
+    let prevColor = -1;
+
+    for (let i = 0; i < cellCount; i++) {
+      const ci = cellBaseChar[i];
+      if (ci < 1) continue;
+      const mono = cellMono[i];
+      if (mono !== prevColor) { ctx.fillStyle = GREY_LUT[mono]; prevColor = mono; }
+      ctx.fillText(RAMP[ci], cellX[i], cellY[i]);
+    }
+
+    ctx.fillStyle = SCANLINE_STYLE;
+    ctx.fill(scanlinePath);
+  }
+
+  // ── Shared frame setup ──
+  function setupFrame() {
+    ctx.fillStyle = '#f2f2ee';
+    ctx.fillRect(0, 0, W, H);
+    ctx.textBaseline = 'top';
+    ctx.font = activeFont;
+  }
+
+  // ── Cached bounding rect (invalidated on resize) ──
+  let cachedRect = stage.getBoundingClientRect();
+
+  // ── Animated render ──
+  let lastFrame = 0;
+
+  function render(now) {
+    if (now - lastFrame < 16) { animId = requestAnimationFrame(render); return; }
+    lastFrame = now;
+
+    const rawSine = (Math.sin(now * THRESH_SPEED) + 1) * 0.5;
+    const skewed  = Math.pow(rawSine, 0.35);
+    const threshPush = effectsOn ? skewed * THRESH_PUSH : 0;
+
+    setupFrame();
+
+    // ── Corrupt pulse: advance ──
+    if (pulseActive) {
+      pulseRadius += PULSE_SPEED;
+      if (pulseRadius > rows) pulseActive = false;
+    }
+
+    // ── Row glitch: smooth interpolation + signal interference ──
+    for (let r = 0; r < rows; r++) {
+      rowGlitchTargets[r] *= 0.92;
+
+      let glitchChance = ROW_GLITCH_CHANCE;
+      let maxShift = ROW_GLITCH_MAX_SHIFT;
+
+      if (mouseInStage && mouseRow >= 0) {
+        const dist = Math.abs(r - mouseRow);
+        if (dist < INTERFERENCE_ROWS) {
+          const proximity = 1 - dist / INTERFERENCE_ROWS;
+          glitchChance *= 1 + proximity * (INTERFERENCE_SHIFT_MULT - 1);
+          maxShift *= 1 + proximity * (INTERFERENCE_SHIFT_MULT - 1);
+        }
+      }
+
+      if (pulseActive) {
+        const distFromOrigin = Math.abs(r - pulseOriginRow);
+        if (distFromOrigin >= pulseRadius - PULSE_WIDTH && distFromOrigin <= pulseRadius) {
+          glitchChance = 0.5;
+          maxShift = ROW_GLITCH_MAX_SHIFT * 3;
+        }
+      }
+
+      if (Math.random() < glitchChance) {
+        rowGlitchTargets[r] = (Math.random() - 0.5) * 2 * maxShift;
+      }
+      if (Math.random() < 0.002) {
+        const blockSize = (Math.random() * 8 + 3) | 0;
+        const shift = (Math.random() - 0.5) * 2 * maxShift;
+        for (let b = 0; b < blockSize && r + b < rows; b++) {
+          rowGlitchTargets[r + b] = shift * (1 - b / blockSize);
+        }
+      }
+      rowGlitchOffsets[r] += (rowGlitchTargets[r] - rowGlitchOffsets[r]) * 0.18;
+    }
+
+    // ── ASCII cells ──
+    let prevColor = -1;
+
+    for (let i = 0; i < cellCount; i++) {
+      if (cellFlickerT[i] > 0) { cellFlickerT[i]--; continue; }
+
+      const row = cellRow[i];
+
+      let flickerChance = FLICKER_CHANCE;
+      let glitchCh = GLITCH_CHANCE;
+      if (mouseInStage && mouseRow >= 0) {
+        const dist = Math.abs(row - mouseRow);
+        if (dist < INTERFERENCE_ROWS) {
+          const proximity = 1 - dist / INTERFERENCE_ROWS;
+          flickerChance *= 1 + proximity * (INTERFERENCE_GLITCH_MULT - 1);
+          glitchCh *= 1 + proximity * (INTERFERENCE_GLITCH_MULT - 1);
+        }
+      }
+
+      if (pulseActive) {
+        const distFromOrigin = Math.abs(row - pulseOriginRow);
+        if (distFromOrigin >= pulseRadius - PULSE_WIDTH && distFromOrigin <= pulseRadius) {
+          if (Math.random() < PULSE_GLITCH_FILL) { cellGlitchT[i] = GLITCH_DURATION; }
+        }
+      }
+
+      if (Math.random() < flickerChance) { cellFlickerT[i] = (Math.random() * 8 + 2) | 0; continue; }
+
+      let ch;
+      if (cellGlitchT[i] > 0) {
+        cellGlitchT[i]--;
+        ch = SCRAMBLE_POOL[(Math.random() * SCRAMBLE_LEN) | 0];
+      } else {
+        if (Math.random() < glitchCh) cellGlitchT[i] = GLITCH_DURATION;
+        if (cellBaseChar[i] < 1) continue;
+        let ci = (cellBaseChar[i] + threshPush + cellDither[i]) | 0;
+        if (ci >= RAMP_LEN) ci = RAMP_LEN - 1;
+        ch = RAMP[ci];
+      }
+
+      const baseMono = cellMono[i];
+      const darken = threshPush / THRESH_PUSH;
+      const mono = (baseMono * (1 - darken * 0.4)) | 0;
+      if (mono !== prevColor) { ctx.fillStyle = GREY_LUT[mono]; prevColor = mono; }
+      ctx.fillText(ch, cellX[i] + rowGlitchOffsets[row], cellY[i]);
+    }
+
+    // ── Scanlines ──
+    ctx.fillStyle = SCANLINE_STYLE;
+    ctx.fill(scanlinePath);
+
+    // ── Tear lines ──
+    if (Math.random() < TEAR_CHANCE) {
+      const count = (Math.random() * 4 + 1) | 0;
+      for (let t = 0; t < count; t++) {
+        const ty = Math.random() * H;
+        const th = Math.random() * 6 + 2;
+        const ts = (Math.random() - 0.5) * 50;
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(0, ty, W, th);
+        ctx.clip();
+        ctx.drawImage(canvas, ts, 0);
+        ctx.restore();
+      }
+    }
+
+    animId = requestAnimationFrame(render);
+  }
+
+  // ── Resize ──
+  let resizeTimeout;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      if (!photoData) return;
+      cachedRect = stage.getBoundingClientRect();
+      buildGrid();
+      buildScanlines();
+      if (reducedMotion) renderStatic();
+    }, 100);
+  });
+
+  // ── Init ──
+  async function init() {
+    await loadPhoto();
+    buildGrid();
+    buildScanlines();
+
+    if (reducedMotion) {
+      renderStatic();
+      hint.style.display = 'none';
+      fxToggle.style.display = 'none';
+      effectsOn = false;
+    } else {
+      setTimeout(() => hint.classList.add('faded'), 3000);
+      if (lowPower) {
+        renderStatic();
+        hint.style.display = 'none';
+        fxToggle.style.display = 'none';
+        effectsOn = false;
+      } else {
+        animId = requestAnimationFrame(render);
+      }
+    }
+  }
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(init);
+  } else {
+    window.addEventListener('load', init);
+  }
+})();
+</script>
+</body>
+</html>
