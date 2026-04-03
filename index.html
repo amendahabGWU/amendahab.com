@@ -244,7 +244,7 @@
         calc(0.52rem + var(--safe-bottom))
         calc(var(--edge) + var(--safe-left));
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end;
       gap: 0.9rem;
       align-items: baseline;
       flex-wrap: wrap;
@@ -288,8 +288,22 @@
         align-items: center;
       }
       .main-nav { width: 100%; justify-content: flex-start; gap: 0.35rem 0.95rem; font-size: 0.76rem; }
-      .layout { grid-template-columns: 1fr; height: auto; overflow: visible; }
-      .left-rail { border-right: 0; border-bottom: 1px solid var(--rule); padding-right: 0; padding-bottom: 1rem; gap: 0.8rem; overflow: visible; }
+      .layout {
+        grid-template-columns: 1fr;
+        height: auto;
+        overflow: visible;
+        padding-right: 0;
+        padding-left: 0;
+      }
+      .left-rail {
+        border-right: 0;
+        border-bottom: 1px solid var(--rule);
+        padding-right: calc(var(--edge) + var(--safe-right));
+        padding-left: calc(var(--edge) + var(--safe-left));
+        padding-bottom: 1rem;
+        gap: 0.8rem;
+        overflow: visible;
+      }
       .release-title { max-inline-size: none; font-size: clamp(1.45rem,7vw,2.15rem); }
       .rail-kicker { font-size: 0.62rem; }
       .feature-link, .email-link, .rail-list { font-size: 0.94rem; }
@@ -326,12 +340,6 @@
   <div class="site">
     <header class="masthead">
       <a class="box-logo" href="/">AMEN</a>
-      <nav class="main-nav" aria-label="Primary">
-        <a href="/demos">demos</a>
-        <a href="https://www.ninaprotocol.com/profiles/amendahab?ref=CJCM76SkGbNEwDUTgqNixQG26Y6YsQUcDchvTsgGGf5F" target="_blank" rel="noopener noreferrer">nina</a>
-        <a href="mailto:amen@amendahab.com">contact</a>
-        <a href="https://instagram.com/amendahab" target="_blank" rel="noopener noreferrer">instagram</a>
-      </nav>
     </header>
 
     <main class="layout">
@@ -345,12 +353,7 @@
           <li><a href="https://amendahab.bandcamp.com/track/without-fear-of-wind" target="_blank" rel="noopener noreferrer">bandcamp</a></li>
         </ul>
 
-        <p class="rail-kicker">explore</p>
-        <a class="feature-link" href="/demos">demos &amp; live performances</a>
-        <p class="ideas-tag">ideas and such</p>
-        <a class="feature-link" href="https://www.ninaprotocol.com/profiles/amendahab?ref=CJCM76SkGbNEwDUTgqNixQG26Y6YsQUcDchvTsgGGf5F" target="_blank" rel="noopener noreferrer">nina</a>
-
-        <p class="rail-kicker">contact</p>
+        <p class="rail-kicker">all inquiries</p>
         <a class="email-link" href="mailto:amen@amendahab.com">amen@amendahab.com</a>
       </aside>
 
@@ -363,12 +366,12 @@
     </main>
 
     <footer class="footer">
-      <span>ideas and such</span>
-      <nav class="footer-nav" aria-label="Social">
-        <a href="https://instagram.com/amendahab" target="_blank" rel="noopener noreferrer">instagram</a>
+      <nav class="footer-nav" aria-label="Footer">
+        <a href="https://www.ninaprotocol.com/profiles/amendahab?ref=CJCM76SkGbNEwDUTgqNixQG26Y6YsQUcDchvTsgGGf5F" target="_blank" rel="noopener noreferrer">nina</a>
         <a href="https://open.spotify.com/artist/2WB58OxKhr8iAK030gw3cB?si=UnBD0_N4TYylXUge_d0DgQ" target="_blank" rel="noopener noreferrer">spotify</a>
         <a href="https://www.youtube.com/@amen_dahab" target="_blank" rel="noopener noreferrer">youtube</a>
-        <a href="/demos">demos</a>
+        <a href="https://instagram.com/amendahab" target="_blank" rel="noopener noreferrer">instagram</a>
+        <a href="mailto:amen@amendahab.com">email</a>
       </nav>
     </footer>
   </div>
