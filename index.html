@@ -162,6 +162,11 @@
     }
     .rail-list a:hover, .feature-link:hover, .email-link:hover { opacity: 0.6; }
 
+    .rail-group {
+      display: grid;
+      gap: 0.35rem;
+    }
+
     .feature-link {
       text-transform: lowercase;
       letter-spacing: 0.018em;
@@ -282,9 +287,14 @@
       .masthead {
         flex-direction: column;
         align-items: flex-start;
-        gap: 0.5rem;
-        padding-top: calc(0.55rem + var(--safe-top));
-        padding-bottom: 0.5rem;
+        gap: 0.32rem;
+        padding-top: calc(0.4rem + var(--safe-top));
+        padding-bottom: 0.35rem;
+      }
+      .box-logo {
+        min-width: 5.1rem;
+        height: 1.55rem;
+        font-size: 0.84rem;
       }
       .box-logo,
       .main-nav a,
@@ -300,10 +310,11 @@
       .main-nav { width: 100%; justify-content: flex-start; gap: 0.35rem 0.95rem; font-size: 0.76rem; }
       .layout {
         grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
         height: auto;
         overflow: visible;
         gap: 0;
-        align-content: start;
+        min-height: 100%;
         padding-top: 0;
         padding-bottom: 0;
         padding-right: 0;
@@ -312,16 +323,36 @@
       .left-rail {
         border-right: 0;
         border-bottom: 0;
-        padding-top: 0.55rem;
+        justify-content: space-between;
+        padding-top: 0.4rem;
         padding-right: calc(var(--edge) + var(--safe-right));
         padding-left: calc(var(--edge) + var(--safe-left));
-        padding-bottom: 0.6rem;
-        gap: 0.6rem;
+        padding-bottom: 0.28rem;
+        gap: 0.9rem;
         overflow: visible;
       }
-      .release-title { max-inline-size: none; font-size: clamp(1.45rem,7vw,2.15rem); }
-      .rail-kicker { font-size: 0.62rem; }
-      .feature-link, .email-link, .rail-list { font-size: 0.94rem; }
+      .rail-group { gap: 0.28rem; }
+      .release-title {
+        max-inline-size: none;
+        font-size: clamp(1.28rem, 7.2vw, 1.95rem);
+        line-height: 0.96;
+      }
+      .rail-kicker {
+        margin-top: 0;
+        font-size: 0.58rem;
+        letter-spacing: 0.16em;
+      }
+      .rail-list {
+        gap: 0.32rem;
+      }
+      .rail-list a,
+      .email-link {
+        padding-bottom: 0.08rem;
+      }
+      .email-link,
+      .rail-list {
+        font-size: 0.9rem;
+      }
       .hero-stage {
         min-height: clamp(250px,66vw,420px);
         height: auto;
@@ -340,21 +371,30 @@
         border-top: 0;
         flex-direction: column;
         align-items: flex-start;
-        gap: 0.5rem;
-        font-size: 0.7rem;
-        padding-top: 0.55rem;
-        padding-bottom: calc(0.55rem + var(--safe-bottom));
+        gap: 0.32rem;
+        font-size: 0.68rem;
+        letter-spacing: 0.1em;
+        padding-top: 0.18rem;
+        padding-bottom: calc(0.42rem + var(--safe-bottom));
       }
       .footer-nav {
         width: 100%;
-        justify-content: space-between;
-        gap: 0.35rem 0.75rem;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        justify-content: flex-start;
+        justify-items: start;
+        gap: 0.18rem 0.8rem;
       }
     }
 
     @media (max-width: 560px) {
       .main-nav { gap: 0.25rem 0.75rem; font-size: 0.7rem; }
       .main-nav a { letter-spacing: 0.08em; }
+      .footer { font-size: 0.64rem; }
+      .footer-nav {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.12rem 0.65rem;
+      }
       .hero-hint {
         right: auto;
         left: clamp(8px,4vw,14px);
@@ -378,17 +418,23 @@
 
     <main class="layout">
       <aside class="left-rail">
-        <p class="rail-kicker">current release</p>
-        <h1 class="release-title">Without Fear of Wind</h1>
+        <div class="rail-group">
+          <p class="rail-kicker">current release</p>
+          <h1 class="release-title">Without Fear of Wind</h1>
+        </div>
 
-        <ul class="rail-list" aria-label="Listen">
-          <li><a href="https://open.spotify.com/track/26YH77kEs232A02Q166fDb?si=49413e3090a44df1" target="_blank" rel="noopener noreferrer">spotify</a></li>
-          <li><a href="https://music.apple.com/us/album/without-fear-of-wind-single/1772431087?uo=4" target="_blank" rel="noopener noreferrer">apple music</a></li>
-          <li><a href="https://amendahab.bandcamp.com/track/without-fear-of-wind" target="_blank" rel="noopener noreferrer">bandcamp</a></li>
-        </ul>
+        <div class="rail-group">
+          <ul class="rail-list" aria-label="Listen">
+            <li><a href="https://open.spotify.com/track/26YH77kEs232A02Q166fDb?si=49413e3090a44df1" target="_blank" rel="noopener noreferrer">spotify</a></li>
+            <li><a href="https://music.apple.com/us/album/without-fear-of-wind-single/1772431087?uo=4" target="_blank" rel="noopener noreferrer">apple music</a></li>
+            <li><a href="https://amendahab.bandcamp.com/track/without-fear-of-wind" target="_blank" rel="noopener noreferrer">bandcamp</a></li>
+          </ul>
+        </div>
 
-        <p class="rail-kicker">all inquiries</p>
-        <a class="email-link" href="mailto:amen@amendahab.com">amen@amendahab.com</a>
+        <div class="rail-group">
+          <p class="rail-kicker">all inquiries</p>
+          <a class="email-link" href="mailto:amen@amendahab.com">amen@amendahab.com</a>
+        </div>
       </aside>
 
       <section class="hero-stage" aria-label="Interactive ASCII portrait" id="heroStage">
@@ -443,7 +489,13 @@
   const LINE_HEIGHT = 8;
   const FONT = `${FONT_SIZE}px "IBM Plex Mono", "Courier New", monospace`;
   const BASE_CHAR_W = FONT_SIZE * 0.6;
+  const COMPACT_STAGE_BREAKPOINT = 680;
+  const COMPACT_FONT_SIZE = 5.4;
+  const COMPACT_LINE_HEIGHT = 6.05;
+  const COMPACT_CHAR_W = COMPACT_FONT_SIZE * 0.56;
   const PHOTO_SRC = 'portrait.jpg';
+  const PHOTO_SAMPLE_MAX_W = 1400;
+  const PHOTO_SAMPLE_MAX_H = 1100;
   const FRAME_INTERVAL = lowPower ? 32 : 16;
 
   // Effect intensities (zeroed in static/low-power modes)
@@ -474,7 +526,7 @@
   const BASE_RANGE     = RAMP.length - 1 - THRESH_PUSH;
 
   // Adaptive density
-  const MAX_CELLS = lowPower ? 12000 : 22000;
+  const MAX_CELLS = lowPower ? 18000 : 30000;
 
   // ── State ──
   const canvas = document.getElementById('heroCanvas');
@@ -520,6 +572,22 @@
   const RAMP_LEN = RAMP.length;
   const SCRAMBLE_LEN = SCRAMBLE_POOL.length;
 
+  function getGridMetrics(stageWidth) {
+    if (stageWidth <= COMPACT_STAGE_BREAKPOINT) {
+      return {
+        fontSize: COMPACT_FONT_SIZE,
+        charW: COMPACT_CHAR_W,
+        lineH: COMPACT_LINE_HEIGHT,
+      };
+    }
+
+    return {
+      fontSize: FONT_SIZE,
+      charW: BASE_CHAR_W,
+      lineH: LINE_HEIGHT,
+    };
+  }
+
   // ── Photo Loading ──
   function loadPhoto() {
     return new Promise((resolve, reject) => {
@@ -527,7 +595,7 @@
       img.crossOrigin = 'anonymous';
       img.onload = () => {
         const c = document.createElement('canvas');
-        const scale = Math.min(800 / img.width, 600 / img.height, 1);
+        const scale = Math.min(PHOTO_SAMPLE_MAX_W / img.width, PHOTO_SAMPLE_MAX_H / img.height, 1);
         c.width = photoW = Math.round(img.width * scale);
         c.height = photoH = Math.round(img.height * scale);
         const cx = c.getContext('2d');
@@ -553,7 +621,7 @@
     const rect = stage.getBoundingClientRect();
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     dpr = Math.min(window.devicePixelRatio || 1, isSafari ? 1.5 : 2);
-    if (lowPower) dpr = Math.min(dpr, 1);
+    if (lowPower) dpr = Math.min(dpr, isTouchOnly ? 1.5 : 1.25);
     W = rect.width;
     H = rect.height;
     canvas.width = Math.round(W * dpr);
@@ -562,9 +630,10 @@
     canvas.style.height = H + 'px';
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    fontSize = FONT_SIZE;
-    charW = BASE_CHAR_W;
-    lineH = LINE_HEIGHT;
+    const gridMetrics = getGridMetrics(W);
+    fontSize = gridMetrics.fontSize;
+    charW = gridMetrics.charW;
+    lineH = gridMetrics.lineH;
 
     const photoAspect = photoW / photoH;
     const charAspect = charW / lineH;
