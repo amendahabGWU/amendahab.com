@@ -26,6 +26,7 @@
       --safe-right: env(safe-area-inset-right);
       --safe-bottom: env(safe-area-inset-bottom);
       --safe-left: env(safe-area-inset-left);
+      --header-reserve: 0px;
       --footer-offset: 0px;
       --footer-reserve: 5rem;
     }
@@ -192,6 +193,11 @@
       overscroll-behavior: contain;
       contain: layout style;
       min-width: 0;
+    }
+
+    .left-rail .rail-group:first-child {
+      position: relative;
+      top: clamp(1.95rem,5.2vh,3.2rem);
     }
 
     .left-rail .rail-group:last-child {
@@ -367,10 +373,15 @@
         min-height: 100svh;
         height: auto;
         overflow: visible;
+        padding-top: var(--header-reserve);
         padding-bottom: calc(var(--footer-reserve) + var(--footer-offset));
       }
       body { font-size: 15px; }
       .masthead {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
         grid-template-columns: auto 1fr auto;
         align-items: center;
         justify-content: space-between;
@@ -378,6 +389,10 @@
         padding-top: calc(0.44rem + var(--safe-top));
         padding-bottom: 0.38rem;
         border-bottom: 0;
+        background: rgba(242,242,238,0.88);
+        backdrop-filter: blur(14px) saturate(120%);
+        -webkit-backdrop-filter: blur(14px) saturate(120%);
+        box-shadow: 0 12px 28px rgba(242,242,238,0.78);
       }
       .box-logo {
         min-width: 5.9rem;
@@ -436,6 +451,9 @@
         padding-bottom: 0;
       }
       .rail-group { gap: 0.16rem; }
+      .left-rail .rail-group:first-child {
+        top: 0;
+      }
       .release-title {
         max-inline-size: 8ch;
         font-size: clamp(2rem, 12vw, 3rem);
@@ -680,6 +698,7 @@
   const ctx = canvas.getContext('2d', { alpha: false });
   const hint = document.getElementById('heroHint');
   const stage = document.getElementById('heroStage');
+  const masthead = document.querySelector('.masthead');
   const footer = document.querySelector('.footer');
 
   let W = 0, H = 0, dpr = 1;
@@ -1025,6 +1044,12 @@
     cachedRect = stage.getBoundingClientRect();
   }
 
+  function syncHeaderChrome() {
+    if (!masthead) return;
+    const headerHeight = Math.ceil(masthead.getBoundingClientRect().height);
+    document.documentElement.style.setProperty('--header-reserve', `${headerHeight}px`);
+  }
+
   function syncFooterChrome() {
     if (!footer) return;
 
@@ -1039,11 +1064,12 @@
     document.documentElement.style.setProperty('--footer-reserve', `${footerHeight}px`);
   }
 
-  let footerSyncFrame = 0;
-  function scheduleFooterSync() {
-    if (footerSyncFrame) return;
-    footerSyncFrame = requestAnimationFrame(() => {
-      footerSyncFrame = 0;
+  let chromeSyncFrame = 0;
+  function scheduleChromeSync() {
+    if (chromeSyncFrame) return;
+    chromeSyncFrame = requestAnimationFrame(() => {
+      chromeSyncFrame = 0;
+      syncHeaderChrome();
       syncFooterChrome();
     });
   }
@@ -1179,6 +1205,7 @@
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
+      syncHeaderChrome();
       syncFooterChrome();
       if (!photoData) return;
       refreshStageRect();
@@ -1189,18 +1216,19 @@
   });
   window.addEventListener('scroll', () => {
     refreshStageRect();
-    scheduleFooterSync();
+    scheduleChromeSync();
   }, { passive: true });
-  window.addEventListener('orientationchange', scheduleFooterSync);
+  window.addEventListener('orientationchange', scheduleChromeSync);
   if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', scheduleFooterSync);
-    window.visualViewport.addEventListener('scroll', scheduleFooterSync);
+    window.visualViewport.addEventListener('resize', scheduleChromeSync);
+    window.visualViewport.addEventListener('scroll', scheduleChromeSync);
   }
 
   // ── Init ──
   async function init() {
     await loadPhoto();
     updateHintCopy();
+    syncHeaderChrome();
     syncFooterChrome();
     buildGrid();
     buildScanlines();
