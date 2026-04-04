@@ -131,8 +131,6 @@
       transition: filter 180ms var(--ease-out), transform 180ms var(--ease-out);
     }
 
-    .box-logo:hover { filter: brightness(0.88); transform: translateY(-1px); }
-
     .main-nav {
       display: flex;
       grid-column: 3;
@@ -156,8 +154,6 @@
       border-bottom: 1px solid transparent;
       transition: border-color 160ms var(--ease-out), opacity 160ms var(--ease-out);
     }
-    .main-nav a:hover { border-color: var(--ink); opacity: 0.72; }
-
     .header-link {
       text-transform: uppercase;
       font-size: 1.1em;
@@ -238,7 +234,6 @@
         border-color 180ms var(--ease-out);
     }
 
-    .rail-list a:hover,
     .rail-list a:focus-visible {
       opacity: 0.58;
       transform: translateX(2px);
@@ -310,11 +305,6 @@
       transition: opacity 200ms ease, color 200ms ease, border-color 180ms var(--ease-out);
       user-select: none;
     }
-    .fx-toggle:hover {
-      color: var(--ink);
-      border-color: rgba(15,15,15,0.35);
-    }
-
     /* ── Footer ── */
     .footer {
       border-top: 1px solid var(--rule);
@@ -348,10 +338,25 @@
       border-bottom: 1px solid transparent;
       transition: border-color 160ms var(--ease-out), opacity 160ms var(--ease-out);
     }
-    .footer a:hover { border-color: var(--ink); opacity: 0.72; }
+    @media (hover: hover) and (pointer: fine) {
+      .box-logo:hover { filter: brightness(0.88); transform: translateY(-1px); }
+      .main-nav a:hover { border-color: var(--ink); opacity: 0.72; }
+      .rail-list a:hover {
+        opacity: 0.58;
+        transform: translateX(2px);
+      }
+      .fx-toggle:hover {
+        color: var(--ink);
+        border-color: rgba(15,15,15,0.35);
+      }
+      .footer a:hover { border-color: var(--ink); opacity: 0.72; }
+    }
 
     /* ── Mobile ── */
     @media (max-width: 920px) {
+      :root {
+        --edge: clamp(18px, 5vw, 28px);
+      }
       html, body {
         min-height: 100%;
         height: auto;
@@ -372,6 +377,7 @@
         gap: 0.75rem;
         padding-top: calc(0.44rem + var(--safe-top));
         padding-bottom: 0.38rem;
+        border-bottom: 0;
       }
       .box-logo {
         min-width: 5.9rem;
@@ -390,15 +396,18 @@
         margin-left: 0;
         justify-content: center;
         gap: 0;
-        font-size: 0.61rem;
-        letter-spacing: 0.16em;
+        font-size: 0.68rem;
+        font-weight: 600;
+        letter-spacing: 0.17em;
       }
       .main-nav a {
         min-height: 0;
         padding: 0.14rem 0;
+        font-weight: 700;
       }
       .header-link {
-        font-size: 1.08em;
+        font-size: 1.12em;
+        letter-spacing: 0.15em;
       }
       .layout {
         grid-template-columns: 1fr;
@@ -455,7 +464,7 @@
         height: auto;
         aspect-ratio: 1545 / 1024;
         order: -1;
-        border-bottom: 1px solid var(--rule);
+        border-bottom: 0;
       }
       .hero-hint {
         max-width: min(74vw,260px);
@@ -463,7 +472,16 @@
         line-height: 1.3;
         text-wrap: balance;
       }
-      .fx-toggle { padding: 0.46rem 0.66rem; font-size: 0.53rem; }
+      .fx-toggle {
+        padding: 0.46rem 0.66rem;
+        font-size: 0.53rem;
+        opacity: 0;
+        pointer-events: none;
+      }
+      .fx-toggle.is-visible {
+        opacity: 1;
+        pointer-events: auto;
+      }
       .footer {
         position: fixed;
         left: 0;
@@ -478,14 +496,15 @@
         flex-direction: column;
         align-items: center;
         gap: 0.14rem;
-        font-size: 0.58rem;
+        font-size: 0.64rem;
+        font-weight: 600;
         letter-spacing: 0.12em;
         text-align: center;
         justify-content: center;
         padding:
-          0.34rem
+          0.44rem
           calc(var(--edge) + var(--safe-right))
-          calc(0.38rem + var(--safe-bottom))
+          calc(0.42rem + var(--safe-bottom))
           calc(var(--edge) + var(--safe-left));
       }
       .footer-nav {
@@ -501,14 +520,15 @@
         padding: 0.04rem 0;
         display: inline-flex;
         align-items: center;
+        font-weight: 700;
       }
     }
 
     @media (max-width: 560px) {
-      .main-nav { gap: 0; font-size: 0.54rem; }
-      .main-nav a { letter-spacing: 0.12em; }
+      .main-nav { gap: 0; font-size: 0.62rem; }
+      .main-nav a { letter-spacing: 0.13em; }
       .header-link {
-        font-size: 1.06em;
+        font-size: 1.1em;
       }
       .release-title {
         font-size: clamp(1.85rem, 13vw, 2.6rem);
@@ -517,8 +537,8 @@
         min-height: clamp(320px, 88vw, 460px);
       }
       .footer {
-        font-size: 0.56rem;
-        letter-spacing: 0.1em;
+        font-size: 0.6rem;
+        letter-spacing: 0.11em;
       }
       .footer-nav {
         gap: 0.1rem 0.8rem;
@@ -565,9 +585,9 @@
       </aside>
 
       <section class="hero-stage" aria-label="Interactive ASCII portrait" id="heroStage">
-        <span class="sr-only" aria-live="polite">ASCII portrait of the artist. Move a pointer or drag across the portrait to interfere with the signal. Click or tap to send a corrupt pulse. Press R to reset. Animations are paused when reduced motion is enabled.</span>
+        <span class="sr-only" aria-live="polite">ASCII portrait of the artist. Tap or click to send a corrupt pulse. Use the FX toggle to pause or restart the animation. Press R to reset on desktop. Animations are paused when reduced motion is enabled.</span>
         <canvas class="hero-canvas" id="heroCanvas"></canvas>
-        <div class="hero-hint" id="heroHint">move through the signal · tap or click to pulse</div>
+        <div class="hero-hint" id="heroHint">tap or click to pulse</div>
         <button class="fx-toggle" id="fxToggle" aria-label="Toggle ASCII effects">fx: on</button>
       </section>
     </main>
@@ -673,6 +693,7 @@
   let mouseInStage = false;
 
   let effectsOn = true;
+  const MOBILE_FX_IDLE_MS = 1800;
 
   // Corrupt pulse state
   let pulseActive = false;
@@ -683,7 +704,7 @@
     if (reducedMotion) return;
     if (isTouchOnly) {
       hint.textContent = effectsOn
-        ? (lowPower ? 'drag to interfere · tap to pulse' : 'drag to interfere · tap to corrupt')
+        ? (lowPower ? 'tap to pulse · tap fx to pause' : 'tap to corrupt · tap fx to pause')
         : 'tap fx to animate the portrait';
       return;
     }
@@ -850,6 +871,11 @@
 
   // ── Pointer: signal interference ──
   function onPointerMove(e) {
+    if (isTouchOnly) {
+      mouseInStage = false;
+      mouseRow = -1;
+      return;
+    }
     if (reducedMotion || !effectsOn) return;
     refreshStageRect();
     mouseX = e.clientX - cachedRect.left;
@@ -860,6 +886,12 @@
   }
 
   function onPointerDown(e) {
+    if (isTouchOnly) {
+      mouseInStage = false;
+      mouseRow = -1;
+      hint.classList.add('faded');
+      return;
+    }
     if (reducedMotion || !effectsOn) return;
     refreshStageRect();
     mouseX = e.clientX - cachedRect.left;
@@ -907,11 +939,34 @@
   // ── Effects toggle ──
   const fxToggle = document.getElementById('fxToggle');
   let animId = null;
+  let mobileFxTimer = 0;
+
+  function clearMobileFxTimer() {
+    if (!mobileFxTimer) return;
+    window.clearTimeout(mobileFxTimer);
+    mobileFxTimer = 0;
+  }
+
+  function setMobileFxVisible(visible) {
+    if (!isTouchOnly || reducedMotion) return;
+    fxToggle.classList.toggle('is-visible', visible);
+  }
+
+  function bumpMobileFxVisibility() {
+    if (!isTouchOnly || reducedMotion) return;
+    setMobileFxVisible(true);
+    clearMobileFxTimer();
+    mobileFxTimer = window.setTimeout(() => {
+      fxToggle.classList.remove('is-visible');
+      mobileFxTimer = 0;
+    }, MOBILE_FX_IDLE_MS);
+  }
 
   function setEffectsState(nextState) {
     effectsOn = nextState;
     fxToggle.textContent = effectsOn ? 'fx: on' : 'fx: off';
     updateHintCopy();
+    if (isTouchOnly && !reducedMotion) bumpMobileFxVisibility();
 
     if (!effectsOn) {
       if (animId) { cancelAnimationFrame(animId); animId = null; }
@@ -926,11 +981,17 @@
 
   fxToggle.addEventListener('pointerdown', (e) => {
     e.stopPropagation();
+    bumpMobileFxVisibility();
   });
   fxToggle.addEventListener('click', (e) => {
     e.stopPropagation();
     setEffectsState(!effectsOn);
   });
+  if (isTouchOnly) {
+    document.addEventListener('pointerdown', bumpMobileFxVisibility, { passive: true });
+    window.addEventListener('scroll', bumpMobileFxVisibility, { passive: true });
+    document.addEventListener('keydown', bumpMobileFxVisibility);
+  }
 
   // ── Static render (accessibility / reduced-motion) ──
   function renderStatic() {
@@ -1155,6 +1216,9 @@
         setEffectsState(false);
       } else {
         setEffectsState(true);
+      }
+      if (isTouchOnly) {
+        bumpMobileFxVisibility();
       }
     }
   }
