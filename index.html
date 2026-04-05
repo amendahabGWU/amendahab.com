@@ -56,6 +56,10 @@
         var(--paper);
     }
 
+    html.is-lite body {
+      background: var(--paper);
+    }
+
     a, button { touch-action: manipulation; }
 
     a:focus-visible,
@@ -275,6 +279,10 @@
       filter: contrast(1.05) brightness(0.98);
     }
 
+    html.is-lite .hero-canvas {
+      filter: none;
+    }
+
     .hero-hint {
       position: absolute;
       bottom: clamp(8px,1vw,14px);
@@ -310,6 +318,16 @@
       cursor: pointer;
       transition: opacity 200ms ease, color 200ms ease, border-color 180ms var(--ease-out);
       user-select: none;
+    }
+
+    html.is-lite .masthead,
+    html.is-lite .footer,
+    html.is-lite .hero-hint,
+    html.is-lite .fx-toggle {
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      background: rgba(242,242,238,0.96);
+      box-shadow: none;
     }
     /* ── Footer ── */
     .footer {
@@ -628,13 +646,30 @@
   // Accessibility: respect OS/browser reduced-motion and prefers-contrast
   const mqReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let reducedMotion = mqReducedMotion.matches;
+  const rootEl = document.documentElement;
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
   // Listen for live changes (user toggles setting while page is open)
   mqReducedMotion.addEventListener('change', (e) => {
     reducedMotion = e.matches;
-    if (reducedMotion && photoData) {
-      buildGrid(); buildScanlines(); renderStatic();
+    syncLiteModeClass();
+    if (!photoData) return;
+    buildGrid();
+    buildScanlines();
+    if (reducedMotion) {
+      stopRenderLoop();
+      hint.style.display = 'none';
+      fxToggle.style.display = 'none';
+      renderStatic();
+      return;
     }
+    hint.style.display = '';
+    fxToggle.style.display = '';
+    if (effectsOn) {
+      syncRenderLoop();
+      return;
+    }
+    renderStatic();
   });
 
   // Low-power heuristics: threads, Save-Data header, touch-only (likely mobile),
@@ -645,6 +680,12 @@
   const isTouchOnly = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
   const isCompactTouch = isTouchOnly && isSmallScreen;
   let lowPower = reducedMotion || hwThreads <= 4 || saveData || (isTouchOnly && isSmallScreen);
+
+  function syncLiteModeClass() {
+    rootEl.classList.toggle('is-lite', lowPower || reducedMotion);
+  }
+
+  syncLiteModeClass();
 
   // Battery API removed — deprecated in most modern browsers
 
@@ -661,7 +702,9 @@
   const PHOTO_SRC = 'portrait.jpg';
   const PHOTO_SAMPLE_MAX_W = 1400;
   const PHOTO_SAMPLE_MAX_H = 1100;
-  const FRAME_INTERVAL = lowPower ? 32 : 16;
+  const ACTIVE_FRAME_INTERVAL = lowPower ? 34 : (isCompactTouch ? 20 : 16);
+  const IDLE_FRAME_INTERVAL = lowPower ? 52 : (isCompactTouch ? 34 : 26);
+  const MAX_RENDER_DPR = lowPower ? (isTouchOnly ? 1.15 : 1.25) : (isCompactTouch ? 1.25 : 1.6);
 
   // Effect intensities (zeroed in static/low-power modes)
   const GLITCH_CHANCE    = lowPower ? 0 : (isCompactTouch ? 0.0045 : 0.0125);
@@ -684,14 +727,18 @@
   const PULSE_SPEED = 3;
   const PULSE_GLITCH_FILL = lowPower ? 0.32 : 0.7;
   const PULSE_WIDTH = lowPower ? 4 : 6;
+  const INTERACTION_BOOST_MS = lowPower ? 180 : 260;
 
   // Threshold modulation
   const THRESH_PUSH    = 7;
   const THRESH_SPEED   = 0.00032;
   const BASE_RANGE     = RAMP.length - 1 - THRESH_PUSH;
+  const BG_MONO        = 242;
+  const OUTLINE_CUTOFF = 0.42;
+  const REVEAL_FEATHER = 0.18;
 
   // Adaptive density
-  const MAX_CELLS = lowPower ? 18000 : 30000;
+  const MAX_CELLS = lowPower ? 14000 : (isCompactTouch ? 18000 : 26000);
 
   // ── State ──
   const canvas = document.getElementById('heroCanvas');
@@ -705,11 +752,14 @@
   let cols = 0, rows = 0, charW = BASE_CHAR_W, lineH = LINE_HEIGHT, fontSize = FONT_SIZE;
   let activeFont = FONT;
   let cellCount = 0;
-  let cellX, cellY, cellRow, cellBaseChar, cellMono, cellGlitchT, cellFlickerT, cellDither;
+  let cellX, cellY, cellRow, cellBaseChar, cellBaseNorm, cellMono, cellGlitchT, cellFlickerT, cellDither;
   let photoData = null, photoW = 0, photoH = 0;
   let rowGlitchOffsets, rowGlitchTargets;
   let mouseX = -9999, mouseY = -9999, mouseRow = -1;
   let mouseInStage = false;
+  let pageVisible = !document.hidden;
+  let stageVisible = true;
+  let interactionBoostUntil = 0;
 
   let effectsOn = true;
   const MOBILE_FX_IDLE_MS = 1800;
@@ -739,6 +789,35 @@
 
   const RAMP_LEN = RAMP.length;
   const SCRAMBLE_LEN = SCRAMBLE_POOL.length;
+
+  function clamp01(value) {
+    if (value <= 0) return 0;
+    if (value >= 1) return 1;
+    return value;
+  }
+
+  function smoothstep(edge0, edge1, value) {
+    const span = edge1 - edge0 || 1;
+    const x = clamp01((value - edge0) / span);
+    return x * x * (3 - 2 * x);
+  }
+
+  function mix(start, end, amount) {
+    return start + (end - start) * amount;
+  }
+
+  function canAnimate() {
+    return effectsOn && !reducedMotion && pageVisible && stageVisible;
+  }
+
+  function bumpInteractionBoost() {
+    interactionBoostUntil = performance.now() + INTERACTION_BOOST_MS;
+  }
+
+  function getFrameInterval(now) {
+    if (mouseInStage || pulseActive || now < interactionBoostUntil) return ACTIVE_FRAME_INTERVAL;
+    return IDLE_FRAME_INTERVAL;
+  }
 
   function getGridMetrics(stageWidth) {
     if (stageWidth <= COMPACT_STAGE_BREAKPOINT) {
@@ -787,9 +866,7 @@
   // ── Build Grid (with adaptive density) ──
   function buildGrid() {
     const rect = stage.getBoundingClientRect();
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    dpr = Math.min(window.devicePixelRatio || 1, isSafari ? 1.5 : 2);
-    if (lowPower) dpr = Math.min(dpr, isTouchOnly ? 1.5 : 1.25);
+    dpr = Math.min(window.devicePixelRatio || 1, isSafari ? 1.5 : MAX_RENDER_DPR);
     W = rect.width;
     H = rect.height;
     canvas.width = Math.round(W * dpr);
@@ -843,6 +920,7 @@
     cellY = new Float32Array(count);
     cellRow = new Uint16Array(count);
     cellBaseChar = new Uint8Array(count);
+    cellBaseNorm = new Float32Array(count);
     cellMono = new Uint8Array(count);
     cellGlitchT = new Uint8Array(count);
     cellFlickerT = new Uint8Array(count);
@@ -864,12 +942,14 @@
         const g = Math.pow(normL, 2.0);
         const curvedL = g < 0.5 ? 2 * g * g : 1 - 2 * (1 - g) * (1 - g);
         const charIdx = Math.round((1 - curvedL) * BASE_RANGE);
+        const baseNorm = charIdx / BASE_RANGE;
         const mono = Math.min(Math.round(curvedL * 100 + 15), 160);
 
         cellX[idx] = x;
         cellY[idx] = y;
         cellRow[idx] = row;
         cellBaseChar[idx] = charIdx;
+        cellBaseNorm[idx] = baseNorm;
         cellMono[idx] = mono;
         cellGlitchT[idx] = 0;
         cellFlickerT[idx] = 0;
@@ -896,7 +976,7 @@
       return;
     }
     if (reducedMotion || !effectsOn) return;
-    refreshStageRect();
+    bumpInteractionBoost();
     mouseX = e.clientX - cachedRect.left;
     mouseY = e.clientY - cachedRect.top;
     mouseInStage = true;
@@ -912,7 +992,7 @@
       return;
     }
     if (reducedMotion || !effectsOn) return;
-    refreshStageRect();
+    bumpInteractionBoost();
     mouseX = e.clientX - cachedRect.left;
     mouseY = e.clientY - cachedRect.top;
     mouseInStage = true;
@@ -929,7 +1009,7 @@
   // ── Click/tap: corrupt pulse ──
   function onClickPulse(e) {
     if (reducedMotion || !effectsOn) return;
-    refreshStageRect();
+    bumpInteractionBoost();
     const cy = e.clientY - cachedRect.top;
     const offsetY = (H - rows * lineH) / 2;
     pulseOriginRow = Math.floor((cy - offsetY) / lineH);
@@ -940,6 +1020,7 @@
   // ── Key handler ──
   function onKeyDown(e) {
     if (e.key === 'r' || e.key === 'R') {
+      bumpInteractionBoost();
       cellGlitchT.fill(0);
       cellFlickerT.fill(0);
       rowGlitchTargets.fill(0);
@@ -948,7 +1029,7 @@
   }
 
   stage.addEventListener('pointerdown', onPointerDown);
-  stage.addEventListener('pointermove', onPointerMove);
+  stage.addEventListener('pointermove', onPointerMove, { passive: true });
   stage.addEventListener('pointerleave', onPointerLeave);
   stage.addEventListener('pointerup', onPointerLeave);
   stage.addEventListener('pointercancel', onPointerLeave);
@@ -959,6 +1040,26 @@
   const fxToggle = document.getElementById('fxToggle');
   let animId = null;
   let mobileFxTimer = 0;
+
+  function stopRenderLoop() {
+    if (!animId) return;
+    cancelAnimationFrame(animId);
+    animId = null;
+  }
+
+  function startRenderLoop() {
+    if (animId || !photoData || !canAnimate()) return;
+    lastFrame = 0;
+    animId = requestAnimationFrame(render);
+  }
+
+  function syncRenderLoop() {
+    if (canAnimate()) {
+      startRenderLoop();
+      return;
+    }
+    stopRenderLoop();
+  }
 
   function clearMobileFxTimer() {
     if (!mobileFxTimer) return;
@@ -988,13 +1089,15 @@
     if (isTouchOnly && !reducedMotion) bumpMobileFxVisibility();
 
     if (!effectsOn) {
-      if (animId) { cancelAnimationFrame(animId); animId = null; }
+      stopRenderLoop();
       renderStatic();
       return;
     }
 
-    if (!reducedMotion && !animId) {
-      animId = requestAnimationFrame(render);
+    if (canAnimate()) {
+      startRenderLoop();
+    } else if (photoData) {
+      renderStatic();
     }
   }
 
@@ -1069,6 +1172,7 @@
     if (chromeSyncFrame) return;
     chromeSyncFrame = requestAnimationFrame(() => {
       chromeSyncFrame = 0;
+      refreshStageRect();
       syncHeaderChrome();
       syncFooterChrome();
     });
@@ -1078,12 +1182,20 @@
   let lastFrame = 0;
 
   function render(now) {
-    if (now - lastFrame < FRAME_INTERVAL) { animId = requestAnimationFrame(render); return; }
+    if (!canAnimate()) {
+      animId = null;
+      return;
+    }
+
+    if (now - lastFrame < getFrameInterval(now)) { animId = requestAnimationFrame(render); return; }
     lastFrame = now;
 
-    const rawSine = (Math.sin(now * THRESH_SPEED) + 1) * 0.5;
-    const skewed  = Math.pow(rawSine, 0.35);
-    const threshPush = effectsOn ? skewed * THRESH_PUSH : 0;
+    const rawWave = (Math.sin(now * THRESH_SPEED - Math.PI / 2) + 1) * 0.5;
+    const outlineReveal = effectsOn ? smoothstep(0.08, 0.52, rawWave) : 1;
+    const detailReveal = effectsOn ? smoothstep(0.5, 0.96, rawWave) : 0;
+    const visibilityCutoff = mix(1.08, OUTLINE_CUTOFF, outlineReveal) - detailReveal * 0.48;
+    const threshPush = detailReveal * THRESH_PUSH;
+    const detailDarken = detailReveal * 0.42;
 
     setupFrame();
 
@@ -1134,12 +1246,28 @@
     let prevColor = -1;
 
     for (let i = 0; i < cellCount; i++) {
+      const baseChar = cellBaseChar[i];
+      if (baseChar < 1) continue;
+
+      const baseNorm = cellBaseNorm[i];
+      const reveal = smoothstep(
+        visibilityCutoff - REVEAL_FEATHER,
+        visibilityCutoff + REVEAL_FEATHER,
+        baseNorm
+      );
+
+      if (reveal <= 0.01) {
+        cellGlitchT[i] = 0;
+        cellFlickerT[i] = 0;
+        continue;
+      }
+
       if (cellFlickerT[i] > 0) { cellFlickerT[i]--; continue; }
 
       const row = cellRow[i];
 
-      let flickerChance = FLICKER_CHANCE;
-      let glitchCh = GLITCH_CHANCE;
+      let flickerChance = FLICKER_CHANCE * reveal;
+      let glitchCh = GLITCH_CHANCE * reveal * (0.4 + detailReveal * 0.6);
       if (mouseInStage && mouseRow >= 0) {
         const dist = Math.abs(row - mouseRow);
         if (dist < INTERFERENCE_ROWS) {
@@ -1152,7 +1280,7 @@
       if (pulseActive) {
         const distFromOrigin = Math.abs(row - pulseOriginRow);
         if (distFromOrigin >= pulseRadius - PULSE_WIDTH && distFromOrigin <= pulseRadius) {
-          if (Math.random() < PULSE_GLITCH_FILL) { cellGlitchT[i] = GLITCH_DURATION; }
+          if (Math.random() < PULSE_GLITCH_FILL * reveal) { cellGlitchT[i] = GLITCH_DURATION; }
         }
       }
 
@@ -1164,15 +1292,14 @@
         ch = SCRAMBLE_POOL[(Math.random() * SCRAMBLE_LEN) | 0];
       } else {
         if (Math.random() < glitchCh) cellGlitchT[i] = GLITCH_DURATION;
-        if (cellBaseChar[i] < 1) continue;
-        let ci = (cellBaseChar[i] + threshPush + cellDither[i]) | 0;
+        let ci = (baseChar * mix(0.52, 1, reveal) + threshPush * reveal + cellDither[i]) | 0;
         if (ci >= RAMP_LEN) ci = RAMP_LEN - 1;
         ch = RAMP[ci];
       }
 
       const baseMono = cellMono[i];
-      const darken = threshPush / THRESH_PUSH;
-      const mono = (baseMono * (1 - darken * 0.4)) | 0;
+      const monoTarget = Math.max(0, Math.round(baseMono * (1 - detailDarken)));
+      const mono = Math.round(mix(BG_MONO, monoTarget, reveal));
       if (mono !== prevColor) { ctx.fillStyle = GREY_LUT[mono]; prevColor = mono; }
       ctx.fillText(ch, cellX[i] + rowGlitchOffsets[row], cellY[i]);
     }
@@ -1197,7 +1324,7 @@
       }
     }
 
-    animId = requestAnimationFrame(render);
+    animId = canAnimate() ? requestAnimationFrame(render) : null;
   }
 
   // ── Resize ──
@@ -1222,6 +1349,21 @@
   if (window.visualViewport) {
     window.visualViewport.addEventListener('resize', scheduleChromeSync);
     window.visualViewport.addEventListener('scroll', scheduleChromeSync);
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    pageVisible = !document.hidden;
+    if (pageVisible) refreshStageRect();
+    syncRenderLoop();
+  });
+
+  if ('IntersectionObserver' in window) {
+    const stageObserver = new IntersectionObserver((entries) => {
+      stageVisible = entries[0] ? entries[0].isIntersecting : true;
+      if (stageVisible) refreshStageRect();
+      syncRenderLoop();
+    }, { threshold: 0.08 });
+    stageObserver.observe(stage);
   }
 
   // ── Init ──
