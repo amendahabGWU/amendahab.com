@@ -705,16 +705,23 @@
   const ACTIVE_FRAME_INTERVAL = lowPower ? 34 : (isCompactTouch ? 20 : 16);
   const IDLE_FRAME_INTERVAL = lowPower ? 52 : (isCompactTouch ? 34 : 26);
   const MAX_RENDER_DPR = lowPower ? (isTouchOnly ? 1.15 : 1.25) : (isCompactTouch ? 1.25 : 1.6);
+  const MOBILE_GLITCH_LITE = isTouchOnly && !reducedMotion;
 
-  // Effect intensities (zeroed in static/low-power modes)
-  const GLITCH_CHANCE    = lowPower ? 0 : (isCompactTouch ? 0.0045 : 0.0125);
+  // Effect intensities
+  const GLITCH_CHANCE    = reducedMotion ? 0 : (isCompactTouch ? 0.0038 : (MOBILE_GLITCH_LITE ? 0.0045 : (lowPower ? 0 : 0.0125)));
   const GLITCH_DURATION  = 14;
-  const ROW_GLITCH_CHANCE = lowPower ? 0 : (isCompactTouch ? 0.012 : 0.03);
+  const ROW_GLITCH_CHANCE = reducedMotion ? 0 : (isCompactTouch ? 0.009 : (MOBILE_GLITCH_LITE ? 0.012 : (lowPower ? 0 : 0.03)));
   const ROW_GLITCH_MAX_SHIFT = isCompactTouch ? 20 : 40;
+  const FLASH_LINE_CHANCE = reducedMotion ? 0 : (isCompactTouch ? 0.022 : (MOBILE_GLITCH_LITE ? 0.024 : (lowPower ? 0.016 : 0.05)));
+  const FLASH_LINE_MAX_COUNT = isCompactTouch ? 1 : 2;
+  const FLASH_LINE_ALPHA = lowPower ? 0.92 : 0.985;
+  const FLASH_LINE_EDGE_ALPHA = lowPower ? 0.08 : 0.14;
+  const FLASH_LINE_HEIGHT_MIN = isCompactTouch ? 0.8 : 0.9;
+  const FLASH_LINE_HEIGHT_MAX = isCompactTouch ? 1.8 : 2.35;
   const SCANLINE_ALPHA   = isCompactTouch ? (lowPower ? 0.008 : 0.018) : (lowPower ? 0.04 : 0.09);
   const SCANLINE_SPACING = isCompactTouch ? 10 : (lowPower ? 6 : 4);
-  const FLICKER_CHANCE   = lowPower ? 0 : (isCompactTouch ? 0.008 : 0.02);
-  const TEAR_CHANCE      = lowPower ? 0 : (isCompactTouch ? 0.02 : 0.075);
+  const FLICKER_CHANCE   = reducedMotion ? 0 : (isCompactTouch ? 0.0045 : (MOBILE_GLITCH_LITE ? 0.006 : (lowPower ? 0 : 0.02)));
+  const TEAR_CHANCE      = reducedMotion ? 0 : (isCompactTouch ? 0.012 : (MOBILE_GLITCH_LITE ? 0.018 : (lowPower ? 0 : 0.075)));
   const SCRAMBLE_POOL    = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789{}[]<>?/|\\!@#$%^&*';
   const SCANLINE_STYLE   = `rgba(0,0,0,${SCANLINE_ALPHA})`;
 
@@ -725,15 +732,22 @@
 
   // Corrupt pulse config
   const PULSE_SPEED = 3;
-  const PULSE_GLITCH_FILL = lowPower ? 0.32 : 0.7;
+  const PULSE_GLITCH_FILL = reducedMotion ? 0 : (isCompactTouch ? 0.46 : (MOBILE_GLITCH_LITE ? 0.54 : (lowPower ? 0.32 : 0.7)));
   const PULSE_WIDTH = lowPower ? 4 : 6;
   const INTERACTION_BOOST_MS = lowPower ? 180 : 260;
 
   // Threshold modulation
   const THRESH_PUSH    = 7;
   const THRESH_SPEED   = 0.00032;
+  const THRESH_PERIOD_MS = (Math.PI * 2) / THRESH_SPEED;
   const BASE_RANGE     = RAMP.length - 1 - THRESH_PUSH;
   const BG_MONO        = 242;
+  const BLANK_CUTOFF   = 1.22;
+  const BLANK_HOLD_MS  = 300;
+  const BLANK_HOLD     = (1 - Math.cos(Math.PI * Math.min(BLANK_HOLD_MS / THRESH_PERIOD_MS, 0.45))) * 0.5;
+  const BLANK_FADE_IN  = 0.16;
+  const DETAIL_HOLD_MS = 3000;
+  const DETAIL_HOLD    = (1 + Math.cos(Math.PI * Math.min(DETAIL_HOLD_MS / THRESH_PERIOD_MS, 0.45))) * 0.5;
   const OUTLINE_CUTOFF = 0.42;
   const REVEAL_FEATHER = 0.18;
 
@@ -804,6 +818,27 @@
 
   function mix(start, end, amount) {
     return start + (end - start) * amount;
+  }
+
+  function drawFlashLines(intensity = 1) {
+    if (intensity <= 0.001 || FLASH_LINE_CHANCE <= 0 || Math.random() >= FLASH_LINE_CHANCE * intensity) return;
+
+    const count = 1 + ((FLASH_LINE_MAX_COUNT > 1 && Math.random() < 0.38 * intensity) ? 1 : 0);
+
+    for (let i = 0; i < count; i++) {
+      const bandH = Math.max(
+        1,
+        Math.round(lineH * mix(FLASH_LINE_HEIGHT_MIN, FLASH_LINE_HEIGHT_MAX, Math.pow(Math.random(), 0.42)))
+      );
+      const y = Math.max(0, Math.min(H - bandH, Math.random() * H - bandH * 0.5));
+
+      ctx.fillStyle = `rgba(242,242,238,${Math.min(1, FLASH_LINE_ALPHA * intensity)})`;
+      ctx.fillRect(0, y, W, bandH);
+
+      ctx.fillStyle = `rgba(15,15,15,${FLASH_LINE_EDGE_ALPHA * intensity})`;
+      ctx.fillRect(0, Math.max(0, y - 1), W, 1);
+      ctx.fillRect(0, Math.min(H - 1, y + bandH), W, 1);
+    }
   }
 
   function canAnimate() {
@@ -1191,9 +1226,10 @@
     lastFrame = now;
 
     const rawWave = (Math.sin(now * THRESH_SPEED - Math.PI / 2) + 1) * 0.5;
+    const visibilitySignal = effectsOn ? smoothstep(BLANK_HOLD, BLANK_FADE_IN, rawWave) : 1;
     const outlineReveal = effectsOn ? smoothstep(0.08, 0.52, rawWave) : 1;
-    const detailReveal = effectsOn ? smoothstep(0.5, 0.96, rawWave) : 0;
-    const visibilityCutoff = mix(1.08, OUTLINE_CUTOFF, outlineReveal) - detailReveal * 0.48;
+    const detailReveal = effectsOn ? smoothstep(0.5, DETAIL_HOLD, rawWave) : 0;
+    const visibilityCutoff = mix(BLANK_CUTOFF, OUTLINE_CUTOFF, outlineReveal) - detailReveal * 0.48;
     const threshPush = detailReveal * THRESH_PUSH;
     const detailDarken = detailReveal * 0.42;
 
@@ -1203,6 +1239,15 @@
     if (pulseActive) {
       pulseRadius += PULSE_SPEED;
       if (pulseRadius > rows) pulseActive = false;
+    }
+
+    if (visibilitySignal <= 0.001) {
+      rowGlitchOffsets.fill(0);
+      rowGlitchTargets.fill(0);
+      cellGlitchT.fill(0);
+      cellFlickerT.fill(0);
+      animId = canAnimate() ? requestAnimationFrame(render) : null;
+      return;
     }
 
     // ── Row glitch: smooth interpolation + signal interference ──
@@ -1254,7 +1299,7 @@
         visibilityCutoff - REVEAL_FEATHER,
         visibilityCutoff + REVEAL_FEATHER,
         baseNorm
-      );
+      ) * visibilitySignal;
 
       if (reveal <= 0.01) {
         cellGlitchT[i] = 0;
@@ -1305,11 +1350,14 @@
     }
 
     // ── Scanlines ──
-    ctx.fillStyle = SCANLINE_STYLE;
-    ctx.fill(scanlinePath);
+    const scanlineAlpha = SCANLINE_ALPHA * visibilitySignal;
+    if (scanlineAlpha > 0.001) {
+      ctx.fillStyle = `rgba(0,0,0,${scanlineAlpha})`;
+      ctx.fill(scanlinePath);
+    }
 
     // ── Tear lines ──
-    if (Math.random() < TEAR_CHANCE) {
+    if (Math.random() < TEAR_CHANCE * visibilitySignal) {
       const count = (Math.random() * 4 + 1) | 0;
       for (let t = 0; t < count; t++) {
         const ty = Math.random() * H;
@@ -1323,6 +1371,8 @@
         ctx.restore();
       }
     }
+
+    drawFlashLines(visibilitySignal * (pulseActive ? 1.3 : (mouseInStage ? 1.15 : 1)));
 
     animId = canAnimate() ? requestAnimationFrame(render) : null;
   }
