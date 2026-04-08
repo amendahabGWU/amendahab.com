@@ -466,6 +466,26 @@
       color: var(--ink);
     }
 
+    .audio-text-link {
+      color: inherit;
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      display: inline-block;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      vertical-align: top;
+      transition: border-color 180ms var(--ease-out), opacity 180ms var(--ease-out);
+    }
+
+    .audio-text-link[data-linked="false"] {
+      pointer-events: none;
+    }
+
+    .audio-meta-prefix {
+      display: inline;
+    }
+
     .audio-meta {
       color: var(--ink);
       border-top: 1px solid var(--rule);
@@ -560,6 +580,11 @@
       .audio-step:hover:not(:disabled) {
         color: var(--accent);
         background: rgba(0,0,255,0.03);
+      }
+      .audio-text-link[data-linked="true"]:hover,
+      .audio-text-link[data-linked="true"]:focus-visible {
+        border-bottom-color: currentColor;
+        opacity: 0.68;
       }
       .audio-toggle:hover:not(:disabled)::after,
       .audio-toggle:active:not(:disabled)::after,
@@ -883,8 +908,12 @@
           </div>
           <div class="audio-track">
             <div class="audio-copy">
-              <p class="audio-title" id="audioTitle">Without Fear of Wind</p>
-              <p class="audio-meta" id="audioMeta">01 / 01 · audio by amen</p>
+              <p class="audio-title">
+                <a class="audio-text-link" id="audioTitleLink" href="https://amendahab.bandcamp.com/track/without-fear-of-wind" target="_blank" rel="noopener noreferrer" data-linked="true">Without Fear of Wind</a>
+              </p>
+              <p class="audio-meta">
+                <span class="audio-meta-prefix" id="audioMetaPrefix">01 / 01 · </span><a class="audio-text-link" id="audioArtistLink" href="https://open.spotify.com/artist/2WB58OxKhr8iAK030gw3cB?si=UnBD0_N4TYylXUge_d0DgQ" target="_blank" rel="noopener noreferrer" data-linked="true">AMEN</a>
+              </p>
             </div>
           </div>
           <button class="audio-step" id="audioStep" type="button" aria-label="Collapse player">-</button>
@@ -1810,9 +1839,10 @@
     {
       src: 'media/without-fear-of-wind.mp3',
       title: 'Without Fear of Wind',
+      titleUrl: 'https://amendahab.bandcamp.com/track/without-fear-of-wind',
       artist: 'AMEN',
+      artistUrl: 'https://open.spotify.com/artist/2WB58OxKhr8iAK030gw3cB?si=UnBD0_N4TYylXUge_d0DgQ',
       artwork: 'media/finalwedding.jpg',
-      stamp: 'amen',
     },
   ];
 
@@ -1827,8 +1857,9 @@
 
   const audioEl = document.getElementById('audioPlayer');
   const artworkEl = document.getElementById('audioCover');
-  const titleEl = document.getElementById('audioTitle');
-  const metaEl = document.getElementById('audioMeta');
+  const titleLinkEl = document.getElementById('audioTitleLink');
+  const metaPrefixEl = document.getElementById('audioMetaPrefix');
+  const artistLinkEl = document.getElementById('audioArtistLink');
   const statusEl = document.getElementById('audioStatus');
   const toggleButton = document.getElementById('audioToggle');
   const stepButton = document.getElementById('audioStep');
@@ -1889,12 +1920,35 @@
     syncPlaybackUI(false);
   }
 
+  function setLinkedText(element, text, url) {
+    element.textContent = text;
+
+    if (url && typeof url === 'string' && url.trim()) {
+      element.href = url.trim();
+      element.target = '_blank';
+      element.rel = 'noopener noreferrer';
+      element.dataset.linked = 'true';
+      element.removeAttribute('tabindex');
+      return;
+    }
+
+    element.removeAttribute('href');
+    element.removeAttribute('target');
+    element.removeAttribute('rel');
+    element.dataset.linked = 'false';
+    element.setAttribute('tabindex', '-1');
+  }
+
   function setCopy(item, visibleIndex) {
     const artist = item.artist ? item.artist.toUpperCase() : 'AMEN';
-    titleEl.textContent = (item.title || 'Untitled').toUpperCase();
-    metaEl.textContent = item.stamp
-      ? item.stamp.toUpperCase()
-      : `${String(visibleIndex).padStart(2, '0')} / ${String(playlist.length).padStart(2, '0')} · ${artist}`;
+    const title = (item.title || 'Untitled').toUpperCase();
+    const prefix = item.stamp
+      ? `${item.stamp.toUpperCase()} · `
+      : `${String(visibleIndex).padStart(2, '0')} / ${String(playlist.length).padStart(2, '0')} · `;
+
+    setLinkedText(titleLinkEl, title, item.titleUrl);
+    metaPrefixEl.textContent = prefix;
+    setLinkedText(artistLinkEl, artist, item.artistUrl);
     artworkEl.src = item.artwork || 'media/finalwedding.jpg';
     artworkEl.alt = item.title ? `${item.title} artwork` : '';
     statusEl.textContent = `Queued ${item.title || 'Untitled'} by ${artist}.`;
@@ -1977,8 +2031,9 @@
   function initEmptyState() {
     dockEl.dataset.mode = 'empty';
     dockEl.dataset.state = 'paused';
-    titleEl.textContent = 'Transmission deck ready';
-    metaEl.textContent = 'Playlist empty';
+    setLinkedText(titleLinkEl, 'Transmission deck ready', '');
+    metaPrefixEl.textContent = 'Playlist empty';
+    setLinkedText(artistLinkEl, '', '');
     artworkEl.src = 'media/finalwedding.jpg';
     artworkEl.alt = '';
     statusEl.textContent = 'Audio player ready for playlist items.';
