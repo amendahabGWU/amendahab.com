@@ -716,6 +716,9 @@
         order: -1;
         border-bottom: 0;
       }
+      .hero-canvas {
+        filter: none;
+      }
       .hero-hint {
         max-width: min(74vw,260px);
         font-size: 0.53rem;
@@ -954,37 +957,40 @@
 
   // ── Config ──
   const RAMP = ' .\u00b7:;+=*oO0#%&WMN@\u2593\u2588';
+  const MONO_FONT_FAMILY = '"IBM Plex Mono", "Courier New", monospace';
   const FONT_SIZE = 7;
   const LINE_HEIGHT = 8;
-  const FONT = `${FONT_SIZE}px "IBM Plex Mono", "Courier New", monospace`;
+  const FONT = `${FONT_SIZE}px ${MONO_FONT_FAMILY}`;
   const BASE_CHAR_W = FONT_SIZE * 0.6;
   const COMPACT_STAGE_BREAKPOINT = 680;
-  const COMPACT_FONT_SIZE = 5.6;
-  const COMPACT_LINE_HEIGHT = 5.7;
-  const COMPACT_CHAR_W = COMPACT_FONT_SIZE * 0.55;
+  const MOBILE_ASCII_CLARITY = isCompactTouch && !saveData;
+  const COMPACT_FONT_SIZE = MOBILE_ASCII_CLARITY ? 6.1 : 5.6;
+  const COMPACT_LINE_HEIGHT = MOBILE_ASCII_CLARITY ? 6.35 : 5.7;
   const PHOTO_SRC = 'portrait.jpg';
-  const PHOTO_SAMPLE_MAX_W = 1400;
-  const PHOTO_SAMPLE_MAX_H = 1100;
+  const PHOTO_SAMPLE_MAX_W = MOBILE_ASCII_CLARITY ? 1800 : 1400;
+  const PHOTO_SAMPLE_MAX_H = MOBILE_ASCII_CLARITY ? 1400 : 1100;
   const ACTIVE_FRAME_INTERVAL = lowPower ? 34 : (isCompactTouch ? 20 : 16);
   const IDLE_FRAME_INTERVAL = lowPower ? 52 : (isCompactTouch ? 34 : 26);
-  const MAX_RENDER_DPR = lowPower ? (isTouchOnly ? 1.15 : 1.25) : (isCompactTouch ? 1.25 : 1.6);
+  const MAX_RENDER_DPR = MOBILE_ASCII_CLARITY
+    ? (isSafari ? 1.75 : 2)
+    : (lowPower ? (isTouchOnly ? 1.15 : 1.25) : (isCompactTouch ? 1.25 : 1.6));
   const MOBILE_GLITCH_LITE = isTouchOnly && !reducedMotion;
 
   // Effect intensities
-  const GLITCH_CHANCE    = reducedMotion ? 0 : (isCompactTouch ? 0.0038 : (MOBILE_GLITCH_LITE ? 0.0045 : (lowPower ? 0 : 0.0125)));
+  const GLITCH_CHANCE    = reducedMotion ? 0 : (isCompactTouch ? (MOBILE_ASCII_CLARITY ? 0.0018 : 0.0038) : (MOBILE_GLITCH_LITE ? 0.0045 : (lowPower ? 0 : 0.0125)));
   const GLITCH_DURATION  = 14;
-  const ROW_GLITCH_CHANCE = reducedMotion ? 0 : (isCompactTouch ? 0.009 : (MOBILE_GLITCH_LITE ? 0.012 : (lowPower ? 0 : 0.03)));
-  const ROW_GLITCH_MAX_SHIFT = isCompactTouch ? 20 : 40;
-  const FLASH_LINE_CHANCE = reducedMotion ? 0 : (isCompactTouch ? 0.022 : (MOBILE_GLITCH_LITE ? 0.024 : (lowPower ? 0.016 : 0.05)));
+  const ROW_GLITCH_CHANCE = reducedMotion ? 0 : (isCompactTouch ? (MOBILE_ASCII_CLARITY ? 0.004 : 0.009) : (MOBILE_GLITCH_LITE ? 0.012 : (lowPower ? 0 : 0.03)));
+  const ROW_GLITCH_MAX_SHIFT = isCompactTouch ? (MOBILE_ASCII_CLARITY ? 12 : 20) : 40;
+  const FLASH_LINE_CHANCE = reducedMotion ? 0 : (isCompactTouch ? (MOBILE_ASCII_CLARITY ? 0.005 : 0.022) : (MOBILE_GLITCH_LITE ? 0.024 : (lowPower ? 0.016 : 0.05)));
   const FLASH_LINE_MAX_COUNT = isCompactTouch ? 1 : 2;
-  const FLASH_LINE_ALPHA = lowPower ? 0.92 : 0.985;
-  const FLASH_LINE_EDGE_ALPHA = lowPower ? 0.08 : 0.14;
-  const FLASH_LINE_HEIGHT_MIN = isCompactTouch ? 0.8 : 0.9;
-  const FLASH_LINE_HEIGHT_MAX = isCompactTouch ? 1.8 : 2.35;
-  const SCANLINE_ALPHA   = isCompactTouch ? (lowPower ? 0.008 : 0.018) : (lowPower ? 0.04 : 0.09);
-  const SCANLINE_SPACING = isCompactTouch ? 10 : (lowPower ? 6 : 4);
-  const FLICKER_CHANCE   = reducedMotion ? 0 : (isCompactTouch ? 0.0045 : (MOBILE_GLITCH_LITE ? 0.006 : (lowPower ? 0 : 0.02)));
-  const TEAR_CHANCE      = reducedMotion ? 0 : (isCompactTouch ? 0.012 : (MOBILE_GLITCH_LITE ? 0.018 : (lowPower ? 0 : 0.075)));
+  const FLASH_LINE_ALPHA = isCompactTouch ? (MOBILE_ASCII_CLARITY ? 0.72 : (lowPower ? 0.92 : 0.94)) : (lowPower ? 0.92 : 0.985);
+  const FLASH_LINE_EDGE_ALPHA = isCompactTouch ? (MOBILE_ASCII_CLARITY ? 0.04 : (lowPower ? 0.08 : 0.1)) : (lowPower ? 0.08 : 0.14);
+  const FLASH_LINE_HEIGHT_MIN = isCompactTouch ? (MOBILE_ASCII_CLARITY ? 0.7 : 0.8) : 0.9;
+  const FLASH_LINE_HEIGHT_MAX = isCompactTouch ? (MOBILE_ASCII_CLARITY ? 1.2 : 1.8) : 2.35;
+  const SCANLINE_ALPHA   = isCompactTouch ? (MOBILE_ASCII_CLARITY ? 0.004 : (lowPower ? 0.008 : 0.018)) : (lowPower ? 0.04 : 0.09);
+  const SCANLINE_SPACING = isCompactTouch ? (MOBILE_ASCII_CLARITY ? 12 : 10) : (lowPower ? 6 : 4);
+  const FLICKER_CHANCE   = reducedMotion ? 0 : (isCompactTouch ? (MOBILE_ASCII_CLARITY ? 0.0018 : 0.0045) : (MOBILE_GLITCH_LITE ? 0.006 : (lowPower ? 0 : 0.02)));
+  const TEAR_CHANCE      = reducedMotion ? 0 : (isCompactTouch ? (MOBILE_ASCII_CLARITY ? 0.0015 : 0.012) : (MOBILE_GLITCH_LITE ? 0.018 : (lowPower ? 0 : 0.075)));
   const SCRAMBLE_POOL    = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789{}[]<>?/|\\!@#$%^&*';
   const SCANLINE_STYLE   = `rgba(0,0,0,${SCANLINE_ALPHA})`;
 
@@ -1015,7 +1021,7 @@
   const REVEAL_FEATHER = 0.18;
 
   // Adaptive density
-  const MAX_CELLS = lowPower ? 14000 : (isCompactTouch ? 18000 : 26000);
+  const MAX_CELLS = MOBILE_ASCII_CLARITY ? 22000 : (lowPower ? 14000 : (isCompactTouch ? 18000 : 26000));
 
   // ── State ──
   const canvas = document.getElementById('heroCanvas');
@@ -1067,6 +1073,24 @@
 
   const RAMP_LEN = RAMP.length;
   const SCRAMBLE_LEN = SCRAMBLE_POOL.length;
+  const BASE_SAMPLE_KERNEL = [
+    [0, 0, 0.5],
+    [-1, 0, 0.125],
+    [1, 0, 0.125],
+    [0, -1, 0.125],
+    [0, 1, 0.125],
+  ];
+  const MOBILE_SAMPLE_KERNEL = [
+    [0, 0, 0.28],
+    [-1, 0, 0.12],
+    [1, 0, 0.12],
+    [0, -1, 0.12],
+    [0, 1, 0.12],
+    [-1, -1, 0.06],
+    [1, -1, 0.06],
+    [-1, 1, 0.06],
+    [1, 1, 0.06],
+  ];
 
   function clamp01(value) {
     if (value <= 0) return 0;
@@ -1082,6 +1106,26 @@
 
   function mix(start, end, amount) {
     return start + (end - start) * amount;
+  }
+
+  function getMonoFont(size) {
+    return `${size}px ${MONO_FONT_FAMILY}`;
+  }
+
+  function getLineHeight(stageWidth, size) {
+    if (stageWidth <= COMPACT_STAGE_BREAKPOINT) {
+      return MOBILE_ASCII_CLARITY ? Math.max(size + 0.25, COMPACT_LINE_HEIGHT) : COMPACT_LINE_HEIGHT;
+    }
+    return Math.max(size + 1, LINE_HEIGHT);
+  }
+
+  function measureMonoCharWidth(size) {
+    ctx.font = getMonoFont(size);
+    return Math.max(1, ctx.measureText('M').width);
+  }
+
+  function alignToDevicePixel(value) {
+    return Math.round(value * dpr) / dpr;
   }
 
   function drawFlashLines(intensity = 1) {
@@ -1122,15 +1166,13 @@
     if (stageWidth <= COMPACT_STAGE_BREAKPOINT) {
       return {
         fontSize: COMPACT_FONT_SIZE,
-        charW: COMPACT_CHAR_W,
-        lineH: COMPACT_LINE_HEIGHT,
+        lineH: getLineHeight(stageWidth, COMPACT_FONT_SIZE),
       };
     }
 
     return {
       fontSize: FONT_SIZE,
-      charW: BASE_CHAR_W,
-      lineH: LINE_HEIGHT,
+      lineH: getLineHeight(stageWidth, FONT_SIZE),
     };
   }
 
@@ -1154,12 +1196,45 @@
     });
   }
 
-  function samplePhoto(u, v) {
-    const px = Math.min(Math.max(Math.round(u * (photoW - 1)), 0), photoW - 1);
-    const py = Math.min(Math.max(Math.round(v * (photoH - 1)), 0), photoH - 1);
-    const i = (py * photoW + px) * 4;
-    const r = photoData[i], g = photoData[i+1], b = photoData[i+2];
-    return 0.299 * r + 0.587 * g + 0.114 * b;
+  function readPhotoLuminance(x, y) {
+    const px = Math.min(Math.max(x, 0), photoW - 1);
+    const py = Math.min(Math.max(y, 0), photoH - 1);
+    const x0 = Math.floor(px);
+    const y0 = Math.floor(py);
+    const x1 = Math.min(x0 + 1, photoW - 1);
+    const y1 = Math.min(y0 + 1, photoH - 1);
+    const tx = px - x0;
+    const ty = py - y0;
+
+    function luminanceAt(ix, iy) {
+      const i = (iy * photoW + ix) * 4;
+      return 0.299 * photoData[i] + 0.587 * photoData[i + 1] + 0.114 * photoData[i + 2];
+    }
+
+    const top = mix(luminanceAt(x0, y0), luminanceAt(x1, y0), tx);
+    const bottom = mix(luminanceAt(x0, y1), luminanceAt(x1, y1), tx);
+    return mix(top, bottom, ty);
+  }
+
+  function samplePhoto(u, v, radiusU = 0, radiusV = 0) {
+    const px = u * (photoW - 1);
+    const py = v * (photoH - 1);
+    if (radiusU <= 0 || radiusV <= 0) {
+      return readPhotoLuminance(px, py);
+    }
+
+    const kernel = MOBILE_ASCII_CLARITY ? MOBILE_SAMPLE_KERNEL : BASE_SAMPLE_KERNEL;
+    const radiusX = radiusU * (photoW - 1);
+    const radiusY = radiusV * (photoH - 1);
+    let total = 0;
+    let totalWeight = 0;
+
+    for (const [offsetX, offsetY, weight] of kernel) {
+      total += readPhotoLuminance(px + offsetX * radiusX, py + offsetY * radiusY) * weight;
+      totalWeight += weight;
+    }
+
+    return totalWeight > 0 ? total / totalWeight : readPhotoLuminance(px, py);
   }
 
   // ── Build Grid (with adaptive density) ──
@@ -1176,8 +1251,8 @@
 
     const gridMetrics = getGridMetrics(W);
     fontSize = gridMetrics.fontSize;
-    charW = gridMetrics.charW;
     lineH = gridMetrics.lineH;
+    charW = measureMonoCharWidth(fontSize);
 
     const photoAspect = photoW / photoH;
     const charAspect = charW / lineH;
@@ -1202,12 +1277,12 @@
 
     while (testCols * testRows > MAX_CELLS && fontSize < 14) {
       fontSize += 0.5;
-      charW = fontSize * 0.6;
-      lineH = fontSize + 1;
+      lineH = getLineHeight(W, fontSize);
+      charW = measureMonoCharWidth(fontSize);
       fitGrid();
     }
 
-    activeFont = `${fontSize}px "IBM Plex Mono", "Courier New", monospace`;
+    activeFont = getMonoFont(fontSize);
     cols = testCols;
     rows = testRows;
 
@@ -1226,18 +1301,20 @@
     cellDither = new Float32Array(count);
     cellCount = count;
 
-    const offsetX = (W - cols * charW) / 2;
-    const offsetY = (H - rows * lineH) / 2;
+    const offsetX = alignToDevicePixel((W - cols * charW) / 2);
+    const offsetY = alignToDevicePixel((H - rows * lineH) / 2);
+    const sampleRadiusU = (MOBILE_ASCII_CLARITY ? 0.68 : 0.42) / Math.max(cols, 1);
+    const sampleRadiusV = (MOBILE_ASCII_CLARITY ? 0.68 : 0.42) / Math.max(rows, 1);
     let idx = 0;
 
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
-        const x = offsetX + col * charW;
-        const y = offsetY + row * lineH;
+        const x = alignToDevicePixel(offsetX + col * charW);
+        const y = alignToDevicePixel(offsetY + row * lineH);
         const u = col / (cols - 1 || 1);
         const v = row / (rows - 1 || 1);
-        const lum = samplePhoto(u, v);
-        const normL = lum / 255;
+        const lum = samplePhoto(u, v, sampleRadiusU, sampleRadiusV);
+        const normL = clamp01(((lum / 255) - 0.5) * (MOBILE_ASCII_CLARITY ? 1.08 : 1) + 0.5);
         const g = Math.pow(normL, 2.0);
         const curvedL = g < 0.5 ? 2 * g * g : 1 - 2 * (1 - g) * (1 - g);
         const charIdx = Math.round((1 - curvedL) * BASE_RANGE);
@@ -1616,7 +1693,10 @@
       const monoTarget = Math.max(0, Math.round(baseMono * (1 - detailDarken)));
       const mono = Math.round(mix(BG_MONO, monoTarget, reveal));
       if (mono !== prevColor) { ctx.fillStyle = GREY_LUT[mono]; prevColor = mono; }
-      ctx.fillText(ch, cellX[i] + rowGlitchOffsets[row], cellY[i]);
+      const drawX = MOBILE_ASCII_CLARITY
+        ? alignToDevicePixel(cellX[i] + rowGlitchOffsets[row])
+        : cellX[i] + rowGlitchOffsets[row];
+      ctx.fillText(ch, drawX, cellY[i]);
     }
 
     // ── Scanlines ──
