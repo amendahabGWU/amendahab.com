@@ -130,6 +130,11 @@ main:focus-visible {
   transition: color 180ms var(--ease-out), border-color 180ms var(--ease-out), background-color 180ms var(--ease-out), transform 180ms var(--ease-out);
 }
 
+body:not([data-page="home"]) .box-logo {
+  background: var(--accent);
+  color: #fff;
+}
+
 .main-nav {
   display: flex;
   flex-wrap: wrap;
@@ -1756,6 +1761,7 @@ html[data-cover-lightbox="open"] {
 
 @media (hover: hover) and (pointer: fine) {
   .box-logo:hover { background: var(--accent); color: #fff; transform: translateY(-1px); }
+  body:not([data-page="home"]) .box-logo:hover { background: transparent; color: var(--accent); }
   .main-nav a:hover { background: var(--ink); color: #fff; }
   .rail-list a:hover {
     opacity: 0.58;
