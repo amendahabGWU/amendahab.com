@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Your Music — tracks wired into the AMEN site player.">
+  <title>AMEN | Your Music</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,600;1,400;1,600&amp;family=Archivo+Black&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-page="your-music">
+  <a class="skip-link" href="#mainContent">Skip to Main Content</a>
+  <div class="site">
+    <header class="masthead">
+      <a class="box-logo" href="index.html" data-page-link data-nav-link="home">AMEN</a>
+      <nav class="main-nav" aria-label="Header">
+        <a class="header-link" href="your-music.html" data-page-link data-nav-link="your-music">Your Music</a>
+        <a class="header-link" href="my-music.html" data-page-link data-nav-link="my-music">My Music</a>
+        <a class="header-link" href="mailto:amen@amendahab.com">All Inquiries</a>
+      </nav>
+    </header>
+
+    <main class="layout" id="mainContent" tabindex="-1" data-page-content data-page="your-music">
+      <aside class="left-rail left-rail--music left-rail--queue">
+        <div class="rail-group rail-group--queue">
+          <p class="rail-kicker rail-kicker--queue">queue</p>
+          <ol class="track-rail track-rail--queue" data-player-rail aria-label="Queue"></ol>
+        </div>
+      </aside>
+
+      <section class="hero-stage music-stage music-stage--clean music-stage--gridded" aria-label="Integrated player">
+        <div class="music-hero-grid" aria-hidden="true"></div>
+        <div class="clean-queue-flow" data-animate="rise">
+          <header class="music-hero-header">
+            <h1 class="release-title release-title--wide">Your Music</h1>
+          </header>
+          <div class="queue-deck queue-deck--clean" data-queue-deck aria-label="Player queue"></div>
+        </div>
+      </section>
+    </main>
+
+    <section class="audio-dock" id="audioDock" aria-label="Randomized audio player" data-mode="empty">
+      <div class="audio-dock-shell">
+        <div class="audio-queue-pop" id="audioQueuePop" hidden aria-label="Queue">
+          <header class="audio-queue-pop-head">
+            <p class="audio-queue-pop-kicker">Queue</p>
+            <button class="audio-queue-pop-close" id="audioQueueClose" type="button" aria-label="Close queue">×</button>
+          </header>
+          <ol class="audio-queue-pop-list" id="audioQueueList"></ol>
+        </div>
+        <div class="audio-strip">
+          <div class="audio-cover-wrap">
+            <img class="audio-cover" id="audioCover" src="media/finalwedding.jpg" alt="" loading="lazy">
+          </div>
+          <button class="audio-skip audio-skip--prev" id="audioSkipPrev" type="button" aria-label="Previous track"><span class="audio-skip-glyph" aria-hidden="true"></span></button>
+          <button class="audio-toggle" id="audioToggle" type="button" aria-label="Play current track" aria-pressed="false">
+            <span class="audio-toggle-ring" aria-hidden="true">
+              <span class="audio-toggle-glyph"></span>
+            </span>
+          </button>
+          <button class="audio-skip audio-skip--next" id="audioSkipNext" type="button" aria-label="Next track"><span class="audio-skip-glyph" aria-hidden="true"></span></button>
+          <div class="audio-track">
+            <div class="audio-copy">
+              <p class="audio-title">
+                <a class="audio-text-link" id="audioTitleLink" href="https://amendahab.bandcamp.com/track/without-fear-of-wind" target="_blank" rel="noopener noreferrer" data-linked="true">Without Fear of Wind</a>
+              </p>
+              <p class="audio-meta">
+                <span class="audio-meta-prefix" id="audioMetaPrefix">01 / 01 · </span><a class="audio-text-link" id="audioArtistLink" href="https://open.spotify.com/artist/2WB58OxKhr8iAK030gw3cB?si=UnBD0_N4TYylXUge_d0DgQ" target="_blank" rel="noopener noreferrer" data-linked="true">AMEN</a>
+              </p>
+            </div>
+          </div>
+          <button class="audio-queue-toggle" id="audioQueueToggle" type="button" aria-label="Show queue" aria-expanded="false"><span class="audio-queue-icon" aria-hidden="true"></span></button>
+          <button class="audio-step" id="audioStep" type="button" aria-label="Collapse player">-</button>
+        </div>
+        <div class="audio-timeline" id="audioTimeline" role="slider" aria-label="Seek audio" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
+          <canvas class="audio-eq" id="audioEq" aria-hidden="true"></canvas>
+          <div class="audio-timeline-played" id="audioTimelinePlayed"></div>
+          <span class="audio-time audio-time--elapsed" id="audioTimeElapsed" aria-hidden="true">0:00</span>
+          <span class="audio-time audio-time--remaining" id="audioTimeRemaining" aria-hidden="true">-0:00</span>
+        </div>
+        <audio class="audio-player" id="audioPlayer" controls preload="metadata" hidden></audio>
+        <div class="sr-only" id="audioStatus" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <nav class="footer-nav" aria-label="Footer">
+        <a href="https://www.ninaprotocol.com/profiles/amendahab?ref=CJCM76SkGbNEwDUTgqNixQG26Y6YsQUcDchvTsgGGf5F" target="_blank" rel="noopener noreferrer">nina</a>
+        <a href="https://open.spotify.com/artist/2WB58OxKhr8iAK030gw3cB?si=UnBD0_N4TYylXUge_d0DgQ" target="_blank" rel="noopener noreferrer">spotify</a>
+        <a href="https://www.youtube.com/@amen_dahab" target="_blank" rel="noopener noreferrer">youtube</a>
+        <a href="https://instagram.com/amendahab" target="_blank" rel="noopener noreferrer">instagram</a>
+      </nav>
+    </footer>
+  </div>
+
+  <script src="assets/site.js" defer></script>
+</body>
+</html>

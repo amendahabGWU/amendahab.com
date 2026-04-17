@@ -1,4 +1,4 @@
-Add playable audio files to this folder and point `AUDIO_PLAYLIST` in `index.html` at them.
+Add playable audio files to this folder and point `AUDIO_PLAYLIST` in `assets/site.js` at them.
 
 Examples:
 - `media/track-01.mp3`
