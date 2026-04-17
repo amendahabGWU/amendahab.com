@@ -381,9 +381,8 @@
     setCopy(item, visibleIndex) {
       const artist = item.artist ? item.artist.toUpperCase() : 'AMEN';
       const title = (item.title || 'Untitled').toUpperCase();
-      const prefix = item.stamp
-        ? `${item.stamp.toUpperCase()} · `
-        : `${String(visibleIndex).padStart(2, '0')} / ${String(this.queue.length).padStart(2, '0')} · `;
+      const label = item.stamp || item.album || '';
+      const prefix = label ? `${label.toUpperCase()} · ` : '';
 
       this.setLinkedText(this.titleLinkEl, title, item.titleUrl);
       this.metaPrefixEl.textContent = prefix;
@@ -544,9 +543,15 @@
       if (!this.queueListEl) return;
       this.queueListEl.textContent = '';
 
-      this.queue.forEach((trackIndex, position) => {
+      const len = this.queue.length;
+      if (!len) return;
+      const start = Math.max(0, this.queueIndex);
+
+      for (let offset = 0; offset < len; offset += 1) {
+        const position = (start + offset) % len;
+        const trackIndex = this.queue[position];
         const item = this.playlist[trackIndex];
-        if (!item) return;
+        if (!item) continue;
 
         const entry = document.createElement('li');
         entry.className = 'audio-queue-pop-row';
@@ -559,11 +564,10 @@
         button.className = 'audio-queue-pop-button';
         button.dataset.popPlayIndex = String(trackIndex);
 
-        const numEl = document.createElement('span');
-        numEl.className = 'audio-queue-pop-num';
-        numEl.textContent = position === this.queueIndex
-          ? '▸'
-          : String(position + 1).padStart(2, '0');
+        const markerEl = document.createElement('span');
+        markerEl.className = 'audio-queue-pop-num';
+        markerEl.setAttribute('aria-hidden', 'true');
+        markerEl.textContent = position === this.queueIndex ? '▸' : '';
 
         const metaEl = document.createElement('span');
         metaEl.className = 'audio-queue-pop-meta';
@@ -572,15 +576,17 @@
         titleEl.className = 'audio-queue-pop-title';
         titleEl.textContent = item.title || 'Untitled';
 
-        const artistEl = document.createElement('span');
-        artistEl.className = 'audio-queue-pop-artist';
-        artistEl.textContent = item.artist || 'AMEN';
+        const contextEl = document.createElement('span');
+        contextEl.className = 'audio-queue-pop-artist';
+        const contextBits = [item.artist || 'AMEN'];
+        if (item.album) contextBits.push(item.album);
+        contextEl.textContent = contextBits.join(' · ');
 
-        metaEl.append(titleEl, artistEl);
-        button.append(numEl, metaEl);
+        metaEl.append(titleEl, contextEl);
+        button.append(markerEl, metaEl);
         entry.appendChild(button);
         this.queueListEl.appendChild(entry);
-      });
+      }
     }
 
     initEmptyState() {
@@ -707,12 +713,16 @@
     const hideArtists = options.hideArtists || [];
     listEl.textContent = '';
 
-    let displayNum = 0;
-    queue.forEach((trackIndex, position) => {
+    const len = queue.length;
+    if (!len) return;
+    const start = Math.max(0, queueIndex);
+
+    for (let offset = 0; offset < len; offset += 1) {
+      const position = (start + offset) % len;
+      const trackIndex = queue[position];
       const item = playlist[trackIndex];
-      if (!item) return;
-      if (hideArtists.includes(item.artist)) return;
-      displayNum += 1;
+      if (!item) continue;
+      if (hideArtists.includes(item.artist)) continue;
 
       const entry = document.createElement('li');
       entry.dataset.queuePosition = String(position);
@@ -720,9 +730,10 @@
       entry.dataset.active = position === queueIndex ? 'true' : 'false';
       entry.draggable = true;
 
-      const indexEl = document.createElement('span');
-      indexEl.className = 'track-rail-index';
-      indexEl.textContent = String(displayNum).padStart(2, '0');
+      const markerEl = document.createElement('span');
+      markerEl.className = 'track-rail-index';
+      markerEl.setAttribute('aria-hidden', 'true');
+      markerEl.textContent = position === queueIndex ? '▸' : '';
 
       const bodyEl = document.createElement('span');
       bodyEl.className = 'track-rail-body';
@@ -733,12 +744,14 @@
 
       const detailEl = document.createElement('span');
       detailEl.className = 'track-rail-detail';
-      detailEl.textContent = item.artist || 'AMEN';
+      const detailBits = [item.artist || 'AMEN'];
+      if (item.album) detailBits.push(item.album);
+      detailEl.textContent = detailBits.join(' · ');
 
       bodyEl.append(titleEl, detailEl);
-      entry.append(indexEl, bodyEl);
+      entry.append(markerEl, bodyEl);
       listEl.appendChild(entry);
-    });
+    }
   }
 
   function attachQueueDragAndDrop(listEl, onReorder) {

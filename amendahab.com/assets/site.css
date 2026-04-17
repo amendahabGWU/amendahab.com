@@ -2347,6 +2347,25 @@ html[data-cover-lightbox="open"] {
     transform 180ms var(--ease-out);
 }
 
+/* ── Album thumbnail in platforms rail-group ── */
+.rail-album-link {
+  display: block;
+  margin-top: clamp(2.2rem, 4.6vh, 3.25rem);
+  margin-left: 0;
+  margin-right: calc(var(--edge) + var(--safe-left) - clamp(0.85rem, 1.4vw, 1.15rem));
+  transition: opacity 180ms var(--ease-out), transform 180ms var(--ease-out);
+}
+
+.rail-album-art {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border: 1px solid var(--rule);
+  filter: saturate(0.92) contrast(1.02);
+}
+
 /* ── Your Music — hero header + queue ── */
 
 .clean-queue-flow {
@@ -2559,6 +2578,13 @@ html[data-cover-lightbox="open"] {
     transform: translateX(2px);
   }
 
+  .rail-album-link:hover,
+  .rail-album-link:focus-visible {
+    opacity: 0.82;
+    transform: scale(1.02);
+    outline: none;
+  }
+
   .queue-deck--clean .queue-title:hover {
     border-bottom-color: currentColor;
     opacity: 0.72;
@@ -2595,10 +2621,12 @@ html[data-cover-lightbox="open"] {
 
 .artwork-image {
   width: 100%;
+  height: auto;
   aspect-ratio: 1 / 1;
   max-height: calc(100svh - 10rem);
   display: block;
   object-fit: cover;
+  object-position: center;
   border: 1px solid var(--rule);
   filter: saturate(0.92) contrast(1.02);
 }
@@ -2642,6 +2670,32 @@ html[data-cover-lightbox="open"] {
   .artwork-flow {
     width: 100%;
     max-width: min(280px, calc(100svh - 12rem));
+  }
+
+  /* Platforms rail-group: platforms on left, album art on right */
+  .left-rail .rail-group--platforms {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.1rem;
+  }
+
+  .rail-group--platforms .rail-platforms {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .rail-group--platforms .rail-album-link {
+    width: auto;
+    margin: 0;
+    flex-shrink: 0;
+    align-self: flex-start;
+  }
+
+  .rail-group--platforms .rail-album-art {
+    width: 110px;
+    height: 110px;
   }
 }
 
