@@ -124,7 +124,7 @@
     {
       src: 'media/cristian-anonymous-riddim.mp3',
       title: 'Anonymous Riddim',
-      artist: 'Cristian (Patch+)',
+      artist: 'Christian (Patch+)',
       artwork: 'media/cristian-artwork.jpg',
     },
     {
