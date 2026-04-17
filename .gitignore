@@ -2,3 +2,9 @@
 **/.DS_Store
 amendahab.com/media/without-fear-of-wind.wav
 _validation_archive/
+
+# Local-only source material — not published to the site
+Playlist/
+
+# Agent worktrees — local only
+.claude/worktrees/
