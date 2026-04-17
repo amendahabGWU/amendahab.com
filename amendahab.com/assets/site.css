@@ -163,7 +163,8 @@ main:focus-visible {
   text-decoration: none;
   border: 1px solid var(--ink);
   background: transparent;
-  padding: 0.46rem 0.7rem 0.38rem;
+  padding: 0.3rem 0.52rem 0.24rem;
+  font-size: 0.88em;
   line-height: 1;
   transition: color 160ms var(--ease-out), border-color 160ms var(--ease-out), background-color 160ms var(--ease-out), opacity 160ms var(--ease-out);
 }
@@ -1493,19 +1494,18 @@ html.is-lite .fx-toggle {
   overflow: hidden;
   cursor: zoom-in;
   width: 100%;
+  height: 100%;
+  min-height: 42px;
   aspect-ratio: 1 / 1;
-  align-self: center;
-  padding: 3px;
+  padding: 4px;
   box-sizing: border-box;
+  display: grid;
+  place-items: center;
   transition: filter 180ms var(--ease-out);
 }
 
 .audio-skip--prev {
   border-left: 1px solid var(--rule);
-}
-
-.audio-cover {
-  background: #ddd;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -1614,8 +1614,10 @@ html[data-cover-lightbox="open"] {
 .audio-cover {
   width: 100%;
   height: 100%;
+  aspect-ratio: 1 / 1;
   display: block;
   object-fit: cover;
+  background: #ddd;
   filter: none;
 }
 
@@ -1898,7 +1900,7 @@ html[data-cover-lightbox="open"] {
 
   .main-nav a {
     min-height: 0;
-    padding: 0.4rem 0.6rem 0.34rem;
+    padding: 0.26rem 0.5rem 0.22rem;
     font-weight: 700;
   }
 
@@ -2169,16 +2171,16 @@ html[data-cover-lightbox="open"] {
   }
 
   .audio-strip {
-    grid-template-columns: 36px 22px 34px 22px minmax(0,1fr) 26px 24px;
+    grid-template-columns: 42px 22px 34px 22px minmax(0,1fr) 26px 24px;
   }
 
   .audio-dock[data-collapsed="true"] {
-    width: 166px;
+    width: 172px;
   }
 
   .audio-dock[data-collapsed="true"] .audio-strip {
-    grid-template-columns: 36px 22px 34px 22px 26px 24px;
-    width: 164px;
+    grid-template-columns: 42px 22px 34px 22px 26px 24px;
+    width: 170px;
   }
 
   .audio-title,
@@ -2416,6 +2418,9 @@ html[data-cover-lightbox="open"] {
 
 .music-hero-header {
   display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  column-gap: 1rem;
   gap: 0.42rem;
   padding-bottom: clamp(1.1rem, 2.6vw, 1.65rem);
   margin-bottom: clamp(0.4rem, 1.2vw, 0.8rem);
@@ -2424,12 +2429,36 @@ html[data-cover-lightbox="open"] {
 
 .music-hero-header .rail-kicker {
   margin-top: 0;
+  grid-column: 1 / -1;
 }
 
 .music-hero-header .release-title {
   max-inline-size: none;
   font-size: clamp(2.1rem, 4.2vw, 3.4rem);
   line-height: 0.88;
+  grid-column: 1;
+}
+
+.music-hero-legend {
+  grid-column: 2;
+  justify-self: end;
+  align-self: end;
+  margin: 0 0 0.2rem;
+  font: 500 0.56rem/1 "IBM Plex Mono", monospace;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.music-hero-legend-plus {
+  color: var(--accent);
+  font-size: 0.9rem;
+  line-height: 1;
+  font-weight: 600;
 }
 
 .music-stage--gridded {
@@ -2606,6 +2635,24 @@ html[data-cover-lightbox="open"] {
   border-bottom-color: var(--accent);
 }
 
+.queue-deck--clean .queue-button--plus {
+  padding: 0;
+  border: 0;
+  font: 500 1.35rem/1 "IBM Plex Mono", monospace;
+  color: var(--accent);
+  min-width: 1.2em;
+  justify-content: center;
+  letter-spacing: 0;
+}
+
+.queue-deck--clean .queue-button--plus:hover,
+.queue-deck--clean .queue-button--plus:focus-visible {
+  color: var(--ink);
+  border: 0;
+  outline: none;
+  transform: scale(1.15);
+}
+
 /* ── hover states ── */
 @media (hover: hover) and (pointer: fine) {
   .rail-platforms a:hover {
@@ -2770,11 +2817,17 @@ html[data-cover-lightbox="open"] {
     line-height: 1;
   }
 
-  .queue-deck--clean .queue-button::before {
+  .queue-deck--clean .queue-button:not(.queue-button--plus)::before {
     content: "+ ";
     color: var(--accent);
     font-weight: 600;
     margin-right: 0.05em;
+  }
+
+  .queue-deck--clean .queue-button--plus {
+    font-size: 1.2rem;
+    padding: 0 0.1em;
+    line-height: 1;
   }
 
   .queue-deck--clean .queue-thumb {

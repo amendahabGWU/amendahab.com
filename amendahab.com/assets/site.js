@@ -899,19 +899,13 @@
 
       const queueNextButton = document.createElement('button');
       queueNextButton.type = 'button';
-      queueNextButton.className = 'queue-button';
+      queueNextButton.className = 'queue-button queue-button--plus';
       queueNextButton.dataset.queueIndex = String(index);
       queueNextButton.dataset.queuePosition = 'next';
-      queueNextButton.textContent = 'Queue Next';
+      queueNextButton.setAttribute('aria-label', `Queue ${item.title || 'track'} next`);
+      queueNextButton.textContent = '+';
 
-      const queueLastButton = document.createElement('button');
-      queueLastButton.type = 'button';
-      queueLastButton.className = 'queue-button';
-      queueLastButton.dataset.queueIndex = String(index);
-      queueLastButton.dataset.queuePosition = 'last';
-      queueLastButton.textContent = 'Queue Last';
-
-      actionsEl.append(queueNextButton, queueLastButton);
+      actionsEl.append(queueNextButton);
 
       if (item.titleUrl || item.artistUrl) {
         const sourceLink = document.createElement('a');
