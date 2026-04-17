@@ -382,11 +382,11 @@
       const artist = item.artist ? item.artist.toUpperCase() : 'AMEN';
       const title = (item.title || 'Untitled').toUpperCase();
       const label = item.stamp || item.album || '';
-      const prefix = label ? `${label.toUpperCase()} · ` : '';
+      const suffix = label ? ` · ${label.toUpperCase()}` : '';
 
       this.setLinkedText(this.titleLinkEl, title, item.titleUrl);
-      this.metaPrefixEl.textContent = prefix;
       this.setLinkedText(this.artistLinkEl, artist, item.artistUrl);
+      this.metaPrefixEl.textContent = suffix;
       this.artworkEl.src = item.artwork || 'media/finalwedding.jpg';
       this.artworkEl.alt = item.title ? `${item.title} artwork` : '';
       if (this.lightboxEl && !this.lightboxEl.hidden && this.lightboxImageEl) {
@@ -546,8 +546,9 @@
       const len = this.queue.length;
       if (!len) return;
       const start = Math.max(0, this.queueIndex);
+      const maxVisible = Math.min(3, len);
 
-      for (let offset = 0; offset < len; offset += 1) {
+      for (let offset = 0; offset < maxVisible; offset += 1) {
         const position = (start + offset) % len;
         const trackIndex = this.queue[position];
         const item = this.playlist[trackIndex];
@@ -593,8 +594,8 @@
       this.dockEl.dataset.mode = 'empty';
       this.dockEl.dataset.state = 'paused';
       this.setLinkedText(this.titleLinkEl, 'Transmission deck ready', '');
-      this.metaPrefixEl.textContent = 'Playlist empty';
-      this.setLinkedText(this.artistLinkEl, '', '');
+      this.setLinkedText(this.artistLinkEl, 'Playlist empty', '');
+      this.metaPrefixEl.textContent = '';
       this.artworkEl.src = 'media/finalwedding.jpg';
       this.artworkEl.alt = '';
       this.statusEl.textContent = 'Audio player ready for playlist items.';
@@ -871,12 +872,14 @@
       metaEl.className = 'queue-meta';
 
       const titleEl = createLinkedTitle(item);
-      const contextEl = document.createElement('p');
-      contextEl.className = 'queue-artist';
+      metaEl.append(titleEl);
       const context = item.album || item.stamp || '';
-      contextEl.textContent = context || (item.artist || 'AMEN');
-
-      metaEl.append(titleEl, contextEl);
+      if (context) {
+        const contextEl = document.createElement('p');
+        contextEl.className = 'queue-artist';
+        contextEl.textContent = context;
+        metaEl.append(contextEl);
+      }
 
       const thumbButton = document.createElement('button');
       thumbButton.type = 'button';
@@ -1122,36 +1125,89 @@
       rafId = requestAnimationFrame(draw);
     }
 
-    /* draw idle static bars when paused (no analyser needed) */
-    function drawIdle() {
+    /* idle EQ bars driven by a sine — same bars as playing state, heights from sin() */
+    let idleRafId = null;
+    const prefersReducedMotion =
+      window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function drawIdle(timestamp) {
       const rect = canvas.getBoundingClientRect();
       const W = rect.width;
       const H = rect.height;
       ctx.clearRect(0, 0, W, H);
 
-      const barCount = Math.floor(W / 3);
-      const gap = 1;
-      const barW = Math.max(1.5, (W - gap * (barCount - 1)) / barCount);
+      const t = (timestamp || performance.now()) / 1000;
       const progress = getProgress();
       const playedX = progress * W;
 
+      /* match playing draw()'s bar layout */
+      const barCount = Math.min(128, Math.floor(W / 3));
+      const gap = 1;
+      const barW = Math.max(1.5, (W - gap * (barCount - 1)) / barCount);
+
+      /* slow, gentle phase drift — ~1 full sweep every 8s */
+      const speed = prefersReducedMotion ? 0 : 0.12;
+      const phaseShift = t * speed * Math.PI * 2;
+
       for (let i = 0; i < barCount; i++) {
         const x = i * (barW + gap);
-        /* deterministic "noise" based on index */
-        const seed = Math.sin(i * 12.9898 + 78.233) * 43758.5453;
-        const h = (seed - Math.floor(seed)) * H * 0.35 + 2;
-        const y = H - h;
+        const positionPhase = (i / barCount) * Math.PI * 3;
+        /* primary wave + slower harmonic for organic variation */
+        const primary = Math.sin(positionPhase - phaseShift) * 0.5 + 0.5;
+        const harmonic = Math.sin(positionPhase * 0.4 - phaseShift * 0.6) * 0.5 + 0.5;
+        const norm = primary * 0.7 + harmonic * 0.3;
+        const barH = Math.max(2, norm * H * 0.8);
+        const y = H - barH;
+
         const inPlayed = (x + barW) <= playedX;
-        ctx.fillStyle = inPlayed
-          ? 'rgba(0, 0, 255,0.4)'
-          : 'rgba(0, 0, 255,0.15)';
-        ctx.fillRect(x, y, barW, h);
+        if (inPlayed) {
+          const a = 0.35 + norm * 0.55;
+          ctx.fillStyle = 'rgba(0, 0, 255,' + a + ')';
+        } else {
+          const a = 0.1 + norm * 0.22;
+          ctx.fillStyle = 'rgba(0, 0, 255,' + a + ')';
+        }
+
+        const r = Math.min(barW * 0.35, 2);
+        if (barH > r * 2) {
+          ctx.beginPath();
+          ctx.moveTo(x, y + barH);
+          ctx.lineTo(x, y + r);
+          ctx.quadraticCurveTo(x, y, x + r, y);
+          ctx.lineTo(x + barW - r, y);
+          ctx.quadraticCurveTo(x + barW, y, x + barW, y + r);
+          ctx.lineTo(x + barW, y + barH);
+          ctx.closePath();
+          ctx.fill();
+        } else {
+          ctx.fillRect(x, y, barW, barH);
+        }
       }
+    }
+
+    function startIdleLoop() {
+      if (idleRafId) return;
+      sizeCanvas();
+      const tick = (ts) => {
+        drawIdle(ts);
+        syncPlayedBar();
+        if (prefersReducedMotion) {
+          idleRafId = null;
+          return;
+        }
+        idleRafId = requestAnimationFrame(tick);
+      };
+      idleRafId = requestAnimationFrame(tick);
+    }
+
+    function stopIdleLoop() {
+      if (idleRafId) { cancelAnimationFrame(idleRafId); idleRafId = null; }
     }
 
     function startLoop() {
       if (!ensureAudioContext()) return;
       if (audioCtx.state === 'suspended') audioCtx.resume();
+      stopIdleLoop();
       sizeCanvas();
       if (smoothed) smoothed.fill(0);
       if (!rafId) draw();
@@ -1160,8 +1216,7 @@
     function stopLoop() {
       if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
       sizeCanvas();
-      drawIdle();
-      syncPlayedBar();
+      startIdleLoop();
     }
 
     /* ── Scrub / seek ── */
@@ -1214,12 +1269,12 @@
     audio.addEventListener('play', startLoop);
     audio.addEventListener('pause', () => { stopLoop(); });
     audio.addEventListener('ended', () => { stopLoop(); });
-    audio.addEventListener('timeupdate', () => { if (!rafId) { sizeCanvas(); drawIdle(); syncPlayedBar(); } });
-    audio.addEventListener('loadedmetadata', () => { sizeCanvas(); drawIdle(); syncPlayedBar(); });
-    window.addEventListener('resize', () => { sizeCanvas(); if (rafId) { /* draw loop handles it */ } else { drawIdle(); } });
+    audio.addEventListener('timeupdate', () => { if (!rafId && !idleRafId) { sizeCanvas(); startIdleLoop(); } });
+    audio.addEventListener('loadedmetadata', () => { sizeCanvas(); syncPlayedBar(); if (!rafId && !idleRafId) startIdleLoop(); });
+    window.addEventListener('resize', () => { sizeCanvas(); });
 
     /* initial idle render */
-    requestAnimationFrame(() => { sizeCanvas(); drawIdle(); });
+    requestAnimationFrame(() => { sizeCanvas(); startIdleLoop(); });
   })();
   /* ── /Timeline Scrubber + Integrated EQ ──────────────────── */
 
