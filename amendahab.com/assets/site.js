@@ -142,7 +142,7 @@
     {
       src: 'media/kissmybass-mix.m4a',
       title: 'KI$$MYBA$$ Mix',
-      artist: 'Ki$$MYBA$$',
+      artist: 'KI$$MYBA$$',
       artwork: 'media/kissmybass-artwork.png',
     },
     {
