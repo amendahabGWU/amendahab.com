@@ -128,7 +128,7 @@
     {
       src: 'cristian-anonymous-riddim.mp3',
       title: 'Anonymous Riddim',
-      artist: 'Christian (Patch+)',
+      artist: 'Christian Vartanian (of Patch+)',
       artwork: 'cristian-artwork.jpg',
     },
     {
@@ -146,22 +146,22 @@
     {
       src: 'kissmybass-mix.mp3',
       title: 'KI$$MYBA$$ Mix',
-      artist: 'Ki$$MYBA$$',
+      artist: 'KI$$MYBA$$',
       artwork: 'kissmybass-artwork.png',
     },
     {
       src: 'zachary-paul-fear.mp3',
       title: 'Fear',
       artist: 'Zachary Paul',
-      album: 'Calandar',
-      artwork: 'zachary-paul-calandar-cover.jpg',
+      album: 'Calendar',
+      artwork: 'zachary-paul-calendar-cover.jpg',
     },
     {
       src: 'zachary-paul-red-blood.mp3',
       title: 'Red Blood Full Measure',
       artist: 'Zachary Paul',
-      album: 'Calandar',
-      artwork: 'zachary-paul-calandar-cover.jpg',
+      album: 'Calendar',
+      artwork: 'zachary-paul-calendar-cover.jpg',
     },
   ];
 
