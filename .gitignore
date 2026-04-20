@@ -1,7 +1,12 @@
 .DS_Store
 **/.DS_Store
-amendahab.com/media/without-fear-of-wind.wav
 _validation_archive/
+
+# Audio + track artwork hosted on Cloudflare R2 — keep hero image local
+amendahab.com/media/*
+!amendahab.com/media/
+!amendahab.com/media/README.md
+!amendahab.com/media/finalwedding.jpg
 
 # Local-only source material — not published to the site
 Playlist/

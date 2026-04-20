@@ -89,9 +89,13 @@
     window.visualViewport.addEventListener('scroll', scheduleChromeSync);
   }
 
+  const MEDIA_BASE = 'https://pub-9b28308bb6f048c998dbe5e3b904081b.r2.dev/';
+  const mediaUrl = (name) => (name && (/^https?:\/\//i.test(name) || name.includes('/'))) ? name : `${MEDIA_BASE}${name}`;
+  const DEFAULT_ARTWORK = 'media/finalwedding.jpg';
+
   const AUDIO_PLAYLIST = [
     {
-      src: 'media/without-fear-of-wind.mp3',
+      src: 'without-fear-of-wind.mp3',
       title: 'Without Fear of Wind',
       titleUrl: 'https://amendahab.bandcamp.com/track/without-fear-of-wind',
       artist: 'AMEN',
@@ -102,62 +106,62 @@
       embedUrl: 'https://open.spotify.com/embed/track/26YH77kEs232A02Q166fDb?utm_source=generator',
     },
     {
-      src: 'media/addy-jonah-green-star.mp3',
+      src: 'addy-jonah-green-star.mp3',
       title: 'Green Star',
       artist: 'Addy + Jonah',
       album: 'Greenstar',
-      artwork: 'media/addy-jonah-greenstar-cover.jpg',
+      artwork: 'addy-jonah-greenstar-cover.jpg',
     },
     {
-      src: 'media/addy-jonah-reset.m4a',
+      src: 'addy-jonah-reset.m4a',
       title: 'Reset',
       artist: 'Addy + Jonah',
       album: 'Exit',
-      artwork: 'media/addy-jonah-exit-cover.jpg',
+      artwork: 'addy-jonah-exit-cover.jpg',
     },
     {
-      src: 'media/black-noise-elevator-music.m4a',
+      src: 'black-noise-elevator-music.m4a',
       title: 'Elevator Music',
       artist: 'Black Noi$e',
-      artwork: 'media/black-noise-elevator-music-cover.jpg',
+      artwork: 'black-noise-elevator-music-cover.jpg',
     },
     {
-      src: 'media/cristian-anonymous-riddim.mp3',
+      src: 'cristian-anonymous-riddim.mp3',
       title: 'Anonymous Riddim',
       artist: 'Christian (Patch+)',
-      artwork: 'media/cristian-artwork.jpg',
+      artwork: 'cristian-artwork.jpg',
     },
     {
-      src: 'media/jam0600-jamfm-23.m4a',
+      src: 'jam0600-jamfm-23.m4a',
       title: 'jamFM #23',
       artist: 'JAM0600',
-      artwork: 'media/jam0600-artwork.png',
+      artwork: 'jam0600-artwork.png',
     },
     {
-      src: 'media/karim-wfow-mix.m4a',
+      src: 'karim-wfow-mix.m4a',
       title: 'WFOW Mix',
       artist: 'Karim Abdel-Wadood',
-      artwork: 'media/karim-wfow-tracklist.png',
+      artwork: 'karim-wfow-tracklist.png',
     },
     {
-      src: 'media/kissmybass-mix.m4a',
+      src: 'kissmybass-mix.m4a',
       title: 'KI$$MYBA$$ Mix',
       artist: 'Ki$$MYBA$$',
-      artwork: 'media/kissmybass-artwork.png',
+      artwork: 'kissmybass-artwork.png',
     },
     {
-      src: 'media/zachary-paul-fear.mp3',
+      src: 'zachary-paul-fear.mp3',
       title: 'Fear',
       artist: 'Zachary Paul',
       album: 'Calandar',
-      artwork: 'media/zachary-paul-calandar-cover.jpg',
+      artwork: 'zachary-paul-calandar-cover.jpg',
     },
     {
-      src: 'media/zachary-paul-red-blood.mp3',
+      src: 'zachary-paul-red-blood.mp3',
       title: 'Red Blood Full Measure',
       artist: 'Zachary Paul',
       album: 'Calandar',
-      artwork: 'media/zachary-paul-calandar-cover.jpg',
+      artwork: 'zachary-paul-calandar-cover.jpg',
     },
   ];
 
@@ -243,7 +247,7 @@
       if (isOpen) {
         const item = this.getCurrentItem();
         if (!item) return;
-        this.lightboxImageEl.src = item.artwork || 'media/finalwedding.jpg';
+        this.lightboxImageEl.src = item.artwork ? mediaUrl(item.artwork) : DEFAULT_ARTWORK;
         this.lightboxImageEl.alt = item.title ? `${item.title} artwork` : 'Artwork';
         this.lightboxEl.hidden = false;
         document.documentElement.dataset.coverLightbox = 'open';
@@ -387,10 +391,10 @@
       this.setLinkedText(this.titleLinkEl, title, item.titleUrl);
       this.setLinkedText(this.artistLinkEl, artist, item.artistUrl);
       this.metaPrefixEl.textContent = suffix;
-      this.artworkEl.src = item.artwork || 'media/finalwedding.jpg';
+      this.artworkEl.src = item.artwork ? mediaUrl(item.artwork) : DEFAULT_ARTWORK;
       this.artworkEl.alt = item.title ? `${item.title} artwork` : '';
       if (this.lightboxEl && !this.lightboxEl.hidden && this.lightboxImageEl) {
-        this.lightboxImageEl.src = item.artwork || 'media/finalwedding.jpg';
+        this.lightboxImageEl.src = item.artwork ? mediaUrl(item.artwork) : DEFAULT_ARTWORK;
         this.lightboxImageEl.alt = item.title ? `${item.title} artwork` : 'Artwork';
       }
       this.statusEl.textContent = `Queued ${item.title || 'Untitled'} by ${artist}.`;
@@ -419,7 +423,7 @@
       this.resetAudio();
       this.setCopy(item, this.queueIndex + 1);
       this.dockEl.dataset.mode = 'ready';
-      this.audioEl.src = item.src;
+      this.audioEl.src = mediaUrl(item.src);
       this.audioEl.load();
 
       if (autoplay) {
@@ -596,7 +600,7 @@
       this.setLinkedText(this.titleLinkEl, 'Transmission deck ready', '');
       this.setLinkedText(this.artistLinkEl, 'Playlist empty', '');
       this.metaPrefixEl.textContent = '';
-      this.artworkEl.src = 'media/finalwedding.jpg';
+      this.artworkEl.src = DEFAULT_ARTWORK;
       this.artworkEl.alt = '';
       this.statusEl.textContent = 'Audio player ready for playlist items.';
       this.resetAudio();
@@ -889,7 +893,7 @@
 
       const thumbEl = document.createElement('img');
       thumbEl.className = 'queue-thumb';
-      thumbEl.src = item.artwork || 'media/finalwedding.jpg';
+      thumbEl.src = item.artwork ? mediaUrl(item.artwork) : DEFAULT_ARTWORK;
       thumbEl.alt = '';
       thumbEl.loading = 'lazy';
       thumbButton.appendChild(thumbEl);
