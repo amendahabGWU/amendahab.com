@@ -725,17 +725,15 @@
     }
   }
 
-  function createLinkedTitle(item) {
-    const titleEl = item.titleUrl ? document.createElement('a') : document.createElement('p');
+  function createLinkedTitle(item, index) {
+    const titleEl = document.createElement('button');
+    titleEl.type = 'button';
     titleEl.className = 'queue-title';
     titleEl.textContent = item.title || 'Untitled';
-
-    if (titleEl.tagName === 'A') {
-      titleEl.href = item.titleUrl;
-      titleEl.target = '_blank';
-      titleEl.rel = 'noopener noreferrer';
+    if (Number.isInteger(index)) {
+      titleEl.dataset.playIndex = String(index);
+      titleEl.setAttribute('aria-label', `Play ${item.title || 'track'} now`);
     }
-
     return titleEl;
   }
 
@@ -901,7 +899,7 @@
       const metaEl = document.createElement('div');
       metaEl.className = 'queue-meta';
 
-      const titleEl = createLinkedTitle(item);
+      const titleEl = createLinkedTitle(item, index);
       metaEl.append(titleEl);
       const context = item.album || item.stamp || '';
       if (context) {

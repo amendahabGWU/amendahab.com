@@ -1006,8 +1006,17 @@ html.is-lite .hero-canvas {
   font: italic 600 1.08rem/1.02 "Archivo",sans-serif;
   letter-spacing: -0.03em;
   width: fit-content;
+  border: 0;
   border-bottom: 1px solid transparent;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  display: inline-block;
 }
+button.queue-title { font: italic 600 1.08rem/1.02 "Archivo",sans-serif; }
 
 .queue-artist {
   color: var(--muted);
