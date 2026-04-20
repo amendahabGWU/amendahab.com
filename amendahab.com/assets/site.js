@@ -120,7 +120,7 @@
       artwork: 'addy-jonah-exit-cover.jpg',
     },
     {
-      src: 'black-noise-elevator-music.m4a',
+      src: 'black-noise-elevator-music.mp3',
       title: 'Elevator Music',
       artist: 'Black Noi$e',
       artwork: 'black-noise-elevator-music-cover.jpg',
@@ -132,19 +132,19 @@
       artwork: 'cristian-artwork.jpg',
     },
     {
-      src: 'jam0600-jamfm-23.m4a',
+      src: 'jam0600-jamfm-23.mp3',
       title: 'jamFM #23',
       artist: 'JAM0600',
       artwork: 'jam0600-artwork.png',
     },
     {
-      src: 'karim-wfow-mix.m4a',
+      src: 'karim-wfow-mix.mp3',
       title: 'WFOW Mix',
       artist: 'Karim Abdel-Wadood',
       artwork: 'karim-wfow-tracklist.png',
     },
     {
-      src: 'kissmybass-mix.m4a',
+      src: 'kissmybass-mix.mp3',
       title: 'KI$$MYBA$$ Mix',
       artist: 'Ki$$MYBA$$',
       artwork: 'kissmybass-artwork.png',
