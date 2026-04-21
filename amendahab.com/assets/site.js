@@ -89,7 +89,7 @@
     window.visualViewport.addEventListener('scroll', scheduleChromeSync);
   }
 
-  const MEDIA_BASE = 'https://pub-9b28308bb6f048c998dbe5e3b904081b.r2.dev/';
+  const MEDIA_BASE = 'https://media.amendahab.com/';
   const mediaUrl = (name) => (name && (/^https?:\/\//i.test(name) || name.includes('/'))) ? name : `${MEDIA_BASE}${name}`;
   const DEFAULT_ARTWORK = 'media/finalwedding.jpg';
 
