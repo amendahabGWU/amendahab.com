@@ -92,6 +92,8 @@
   const MEDIA_BASE = 'https://media.amendahab.com/';
   const mediaUrl = (name) => (name && (/^https?:\/\//i.test(name) || name.includes('/'))) ? name : `${MEDIA_BASE}${name}`;
   const DEFAULT_ARTWORK = 'media/finalwedding.jpg';
+  const CALENDAR_URL = 'https://recitalprogram.bandcamp.com/album/calendar?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQMMjU2MjgxMDQwNTU4AAGnKaojUYhtPIewu2qKl_Oaln_A3I61Cf4sJs8ND6J6KLL1WptUTel875-RMBM_aem_c5jKYwPnMizZHJ_mr3VKdQ';
+  const EIGHTYSIX_LINK_URL = 'https://linktr.ee/EightySix_?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQMMjU2MjgxMDQwNTU4AAGn5Fuc81MtEcd51XFWfrwQuDjyoBwDOw44xMgwInC6_V7fJ50odBVHQ69rbsg_aem_9sdqBG77bDzXg9Jvwdk22A';
 
   const AUDIO_PLAYLIST = [
     {
@@ -108,58 +110,102 @@
     {
       src: 'addy-jonah-green-star.mp3',
       title: 'Green Star',
-      artist: 'Addy + Jonah',
+      titleUrl: 'https://open.spotify.com/track/6wCcKnEQSnSQnpZ7Kqd9gK?si=fdce92d875c44692',
+      artist: 'Adeline Bateman + Jonah Paz',
+      artistLinks: [
+        { label: 'Adeline Bateman', url: 'https://www.instagram.com/spudrock/' },
+        { label: 'Jonah Paz', url: 'https://www.instagram.com/__ear_/' },
+      ],
       album: 'Greenstar',
       artwork: 'addy-jonah-greenstar-cover.jpg',
     },
     {
       src: 'addy-jonah-reset.m4a',
       title: 'Reset',
-      artist: 'Addy + Jonah',
+      titleUrl: 'https://open.spotify.com/track/5ZZcINzdiNArgNStohLKdC?si=a7ae25ed90d74f38',
+      artist: 'Adeline Bateman + Jonah Paz',
+      artistLinks: [
+        { label: 'Adeline Bateman', url: 'https://www.instagram.com/spudrock/' },
+        { label: 'Jonah Paz', url: 'https://www.instagram.com/__ear_/' },
+      ],
       album: 'Exit',
       artwork: 'addy-jonah-exit-cover.jpg',
     },
     {
       src: 'black-noise-elevator-music.mp3',
       title: 'Elevator Music',
+      titleUrl: 'https://www.youtube.com/watch?v=Ss99VwDHWIU&t=1623s',
       artist: 'Black Noi$e',
+      artistUrl: 'https://www.instagram.com/blackxnoise/',
       artwork: 'black-noise-elevator-music-cover.jpg',
     },
     {
       src: 'cristian-anonymous-riddim.mp3',
       title: 'Anonymous Riddim',
       artist: 'Christian Vartanian (of Patch+)',
+      artistUrl: 'https://www.instagram.com/decemberbeaches/',
       artwork: 'cristian-artwork.jpg',
+    },
+    {
+      src: 'eightysix-making-money-h3.m4a',
+      title: 'Making Money',
+      titleUrl: EIGHTYSIX_LINK_URL,
+      artist: 'EightySix (Jack Brotherton + Hollis Howard)',
+      artistLinks: [
+        { label: 'EightySix', url: 'https://www.instagram.com/3ighty2ix/' },
+        { label: 'Jack Brotherton', url: 'https://www.instagram.com/jacksucks_/' },
+        { label: 'Hollis Howard', url: 'https://www.instagram.com/h0llish0ward/' },
+      ],
+      artwork: 'eightysix-making-money-artwork.png?v=20260429',
+    },
+    {
+      src: 'eightysix-s-and-d.m4a',
+      title: 'S&D',
+      titleUrl: EIGHTYSIX_LINK_URL,
+      artist: 'EightySix (Jack Brotherton + Hollis Howard)',
+      artistLinks: [
+        { label: 'EightySix', url: 'https://www.instagram.com/3ighty2ix/' },
+        { label: 'Jack Brotherton', url: 'https://www.instagram.com/jacksucks_/' },
+        { label: 'Hollis Howard', url: 'https://www.instagram.com/h0llish0ward/' },
+      ],
+      artwork: 'eightysix-s-and-d-artwork.png',
     },
     {
       src: 'jam0600-jamfm-23.mp3',
       title: 'jamFM #23',
       artist: 'JAM0600',
+      artistUrl: 'https://www.instagram.com/jamfm.live/',
       artwork: 'jam0600-artwork.png',
     },
     {
       src: 'karim-wfow-mix.mp3',
       title: 'WFOW Mix',
       artist: 'Karim Abdel-Wadood',
+      artistUrl: 'https://www.instagram.com/wadood_____/',
       artwork: 'karim-wfow-tracklist.png',
     },
     {
       src: 'kissmybass-mix.mp3',
       title: 'KI$$MYBA$$ Mix',
       artist: 'KI$$MYBA$$',
+      artistUrl: 'https://www.instagram.com/s.nads/',
       artwork: 'kissmybass-artwork.png',
     },
     {
       src: 'zachary-paul-fear.mp3',
       title: 'Fear',
+      titleUrl: CALENDAR_URL,
       artist: 'Zachary Paul',
+      artistUrl: 'https://www.instagram.com/ibelieveinsound/',
       album: 'Calendar',
       artwork: 'zachary-paul-calendar-cover.jpg',
     },
     {
       src: 'zachary-paul-red-blood.mp3',
       title: 'Red Blood Full Measure',
+      titleUrl: CALENDAR_URL,
       artist: 'Zachary Paul',
+      artistUrl: 'https://www.instagram.com/ibelieveinsound/',
       album: 'Calendar',
       artwork: 'zachary-paul-calendar-cover.jpg',
     },
@@ -180,6 +226,7 @@
       this.titleLinkEl = document.getElementById('audioTitleLink');
       this.metaPrefixEl = document.getElementById('audioMetaPrefix');
       this.artistLinkEl = document.getElementById('audioArtistLink');
+      this.metaEl = this.metaPrefixEl ? this.metaPrefixEl.closest('.audio-meta') : null;
       this.statusEl = document.getElementById('audioStatus');
       this.toggleButton = document.getElementById('audioToggle');
       this.stepButton = document.getElementById('audioStep');
@@ -405,6 +452,62 @@
       element.setAttribute('tabindex', '-1');
     }
 
+    createAudioTextLink(text, url) {
+      const linkEl = document.createElement('a');
+      linkEl.className = 'audio-text-link';
+      linkEl.textContent = text;
+
+      if (url && typeof url === 'string' && url.trim()) {
+        linkEl.href = url.trim();
+        linkEl.target = '_blank';
+        linkEl.rel = 'noopener noreferrer';
+        linkEl.dataset.linked = 'true';
+        return linkEl;
+      }
+
+      linkEl.dataset.linked = 'false';
+      linkEl.setAttribute('tabindex', '-1');
+      return linkEl;
+    }
+
+    setArtistCopy(item, suffix) {
+      const artist = item.artist ? item.artist.toUpperCase() : 'AMEN';
+      if (!this.metaEl) {
+        this.setLinkedText(this.artistLinkEl, artist, item.artistUrl);
+        this.metaPrefixEl.textContent = suffix;
+        return;
+      }
+
+      this.metaEl.textContent = '';
+
+      const artistLinks = Array.isArray(item.artistLinks) ? item.artistLinks : [];
+      if (artistLinks.length) {
+        let cursor = 0;
+        artistLinks.forEach(({ label, url }) => {
+          if (!label || !url) return;
+          const matchIndex = (item.artist || '').indexOf(label, cursor);
+          if (matchIndex === -1) return;
+          if (matchIndex > cursor) {
+            this.metaEl.append(document.createTextNode((item.artist || '').slice(cursor, matchIndex).toUpperCase()));
+          }
+          this.metaEl.append(this.createAudioTextLink(label.toUpperCase(), url));
+          cursor = matchIndex + label.length;
+        });
+        if (cursor < (item.artist || '').length) {
+          this.metaEl.append(document.createTextNode((item.artist || '').slice(cursor).toUpperCase()));
+        }
+      } else {
+        this.metaEl.append(this.createAudioTextLink(artist, item.artistUrl));
+      }
+
+      this.metaPrefixEl = document.createElement('span');
+      this.metaPrefixEl.className = 'audio-meta-prefix';
+      this.metaPrefixEl.id = 'audioMetaPrefix';
+      this.metaPrefixEl.textContent = suffix;
+      this.metaEl.appendChild(this.metaPrefixEl);
+      this.artistLinkEl = this.metaEl.querySelector('.audio-text-link');
+    }
+
     setCopy(item, visibleIndex) {
       const artist = item.artist ? item.artist.toUpperCase() : 'AMEN';
       const title = (item.title || 'Untitled').toUpperCase();
@@ -412,8 +515,7 @@
       const suffix = label ? ` · ${label.toUpperCase()}` : '';
 
       this.setLinkedText(this.titleLinkEl, title, item.titleUrl);
-      this.setLinkedText(this.artistLinkEl, artist, item.artistUrl);
-      this.metaPrefixEl.textContent = suffix;
+      this.setArtistCopy(item, suffix);
       this.artworkEl.src = item.artwork ? mediaUrl(item.artwork) : DEFAULT_ARTWORK;
       this.artworkEl.alt = item.title ? `${item.title} artwork` : '';
       if (this.lightboxEl && !this.lightboxEl.hidden && this.lightboxImageEl) {
@@ -726,15 +828,31 @@
   }
 
   function createLinkedTitle(item, index) {
-    const titleEl = document.createElement('button');
-    titleEl.type = 'button';
+    const hasUrl = item.titleUrl && typeof item.titleUrl === 'string' && item.titleUrl.trim();
+    const titleEl = document.createElement(hasUrl ? 'a' : 'button');
+    if (hasUrl) {
+      titleEl.href = item.titleUrl.trim();
+      titleEl.target = '_blank';
+      titleEl.rel = 'noopener noreferrer';
+    } else {
+      titleEl.type = 'button';
+    }
     titleEl.className = 'queue-title';
     titleEl.textContent = item.title || 'Untitled';
-    if (Number.isInteger(index)) {
+    if (!hasUrl && Number.isInteger(index)) {
       titleEl.dataset.playIndex = String(index);
       titleEl.setAttribute('aria-label', `Play ${item.title || 'track'} now`);
     }
     return titleEl;
+  }
+
+  function createExternalTextLink(label, url) {
+    const linkEl = document.createElement('a');
+    linkEl.href = url.trim();
+    linkEl.target = '_blank';
+    linkEl.rel = 'noopener noreferrer';
+    linkEl.textContent = label;
+    return linkEl;
   }
 
   function renderTrackRail(listEl, playlist, queue, queueIndex, options = {}) {
@@ -864,10 +982,46 @@
     playlist.forEach((item, index) => {
       const artist = item.artist || 'AMEN';
       if (excludeArtists.includes(artist)) return;
-      if (!seen.has(artist)) seen.set(artist, []);
-      seen.get(artist).push({ item, index });
+      if (!seen.has(artist)) {
+        seen.set(artist, {
+          artist,
+          artistUrl: item.artistUrl || '',
+          artistLinks: Array.isArray(item.artistLinks) ? item.artistLinks : [],
+          tracks: [],
+        });
+      }
+      seen.get(artist).tracks.push({ item, index });
     });
-    return Array.from(seen, ([artist, tracks]) => ({ artist, tracks }));
+    return Array.from(seen.values());
+  }
+
+  function renderArtistHeading(headingEl, group) {
+    headingEl.textContent = '';
+
+    if (Array.isArray(group.artistLinks) && group.artistLinks.length) {
+      let cursor = 0;
+      group.artistLinks.forEach(({ label, url }) => {
+        if (!label || !url) return;
+        const matchIndex = group.artist.indexOf(label, cursor);
+        if (matchIndex === -1) return;
+        if (matchIndex > cursor) {
+          headingEl.append(document.createTextNode(group.artist.slice(cursor, matchIndex)));
+        }
+        headingEl.append(createExternalTextLink(label, url));
+        cursor = matchIndex + label.length;
+      });
+      if (cursor < group.artist.length) {
+        headingEl.append(document.createTextNode(group.artist.slice(cursor)));
+      }
+      if (headingEl.textContent === group.artist) return;
+    }
+
+    if (group.artistUrl) {
+      headingEl.append(createExternalTextLink(group.artist, group.artistUrl));
+      return;
+    }
+
+    headingEl.textContent = group.artist;
   }
 
   function renderQueueDeck(deckEl, playlist, options = {}) {
@@ -885,7 +1039,7 @@
 
       const artistEl = document.createElement('h2');
       artistEl.className = 'queue-group-artist';
-      artistEl.textContent = group.artist;
+      renderArtistHeading(artistEl, group);
 
       headEl.append(artistEl);
       groupEl.appendChild(headEl);
@@ -894,7 +1048,14 @@
       const row = document.createElement('article');
       row.className = 'queue-row';
       row.dataset.queueRow = String(index);
+      row.dataset.rowPlayIndex = String(index);
       row.dataset.active = 'false';
+
+      const playButton = document.createElement('button');
+      playButton.type = 'button';
+      playButton.className = 'queue-play-button';
+      playButton.dataset.playIndex = String(index);
+      playButton.setAttribute('aria-label', `Play ${item.title || 'track'} now`);
 
       const metaEl = document.createElement('div');
       metaEl.className = 'queue-meta';
@@ -935,17 +1096,7 @@
 
       actionsEl.append(queueNextButton);
 
-      if (item.titleUrl || item.artistUrl) {
-        const sourceLink = document.createElement('a');
-        sourceLink.className = 'queue-link';
-        sourceLink.href = item.titleUrl || item.artistUrl;
-        sourceLink.target = '_blank';
-        sourceLink.rel = 'noopener noreferrer';
-        sourceLink.textContent = item.titleUrl ? 'Open Release' : 'Open Artist';
-        actionsEl.appendChild(sourceLink);
-      }
-
-      row.append(thumbButton, metaEl, actionsEl);
+      row.append(playButton, thumbButton, metaEl, actionsEl);
       groupEl.appendChild(row);
       });
 
@@ -1304,6 +1455,21 @@
     const railEl = mainEl.querySelector('[data-player-rail]');
     const deckEl = mainEl.querySelector('[data-queue-deck]');
     const playlist = audioPlayer.getPlaylist();
+    const queueBumpTimerKey = '__amenQueueBumpTimer';
+
+    function triggerQueueButtonBump(buttonEl) {
+      if (!buttonEl) return;
+      if (buttonEl[queueBumpTimerKey]) {
+        window.clearTimeout(buttonEl[queueBumpTimerKey]);
+      }
+      buttonEl.classList.remove('queue-button--bump');
+      void buttonEl.offsetWidth;
+      buttonEl.classList.add('queue-button--bump');
+      buttonEl[queueBumpTimerKey] = window.setTimeout(() => {
+        buttonEl.classList.remove('queue-button--bump');
+        buttonEl[queueBumpTimerKey] = 0;
+      }, 340);
+    }
 
     renderQueueDeck(deckEl, playlist, { hideArtists: ['AMEN'] });
 
@@ -1314,6 +1480,19 @@
     }
 
     const clickHandler = (event) => {
+      const queueTrigger = event.target.closest('[data-queue-index]');
+      if (queueTrigger) {
+        const trackIndex = Number(queueTrigger.dataset.queueIndex);
+        const position = queueTrigger.dataset.queuePosition;
+        if (Number.isInteger(trackIndex)) {
+          audioPlayer.moveInQueue(trackIndex, position);
+          triggerQueueButtonBump(queueTrigger);
+        }
+        return;
+      }
+
+      if (event.target.closest('a')) return;
+
       const thumbTrigger = event.target.closest('[data-play-index]');
       if (thumbTrigger) {
         const trackIndex = Number(thumbTrigger.dataset.playIndex);
@@ -1323,12 +1502,11 @@
         return;
       }
 
-      const queueTrigger = event.target.closest('[data-queue-index]');
-      if (queueTrigger) {
-        const trackIndex = Number(queueTrigger.dataset.queueIndex);
-        const position = queueTrigger.dataset.queuePosition;
+      const rowTrigger = event.target.closest('[data-row-play-index]');
+      if (rowTrigger) {
+        const trackIndex = Number(rowTrigger.dataset.rowPlayIndex);
         if (Number.isInteger(trackIndex)) {
-          audioPlayer.moveInQueue(trackIndex, position);
+          audioPlayer.playTrackAt(trackIndex, { autoplay: true });
         }
       }
     };
